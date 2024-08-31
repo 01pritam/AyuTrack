@@ -10,6 +10,7 @@ import Login from './pages/Login/Login';
 import TrackOrder from './pages/TrackOrders/TrackOrder';
 import { InventoryProvider } from './context/InventoryContext';
 import RegistrationForm from './pages/Register/RegistrationForm';
+import Billings from './pages/Billings/Billings';
 function App() {
   return (
     <AuthProvider>
@@ -24,6 +25,7 @@ function App() {
               <Route path="/signin" element={<Login />} />
               <Route path="/signup" element={<RegistrationForm />} />
               <Route path="/track-orders" element={<TrackOrder />}/>
+              <Route path="/billings" element={<Billings />}/>
             </Routes>
           </div>
       </UserRoleProvider>

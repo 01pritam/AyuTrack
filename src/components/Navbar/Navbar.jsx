@@ -5,7 +5,7 @@ import { navItems } from "../../data";
 
 const Navbar = () => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  const { isSignedIn, logoutUser } = useContext(AuthContext);
+  const { isSignedIn,token, logoutUser } = useContext(AuthContext);
 
   const toggleNavbar = () => {
     setMobileDrawerOpen(!mobileDrawerOpen);
@@ -35,7 +35,7 @@ const Navbar = () => {
             ))}
           </ul>
           <div className="hidden lg:flex items-center space-x-4">
-            {!isSignedIn ? (
+            {!token ? (
               <>
                 <a 
                   href="/signin"
