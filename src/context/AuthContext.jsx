@@ -5,9 +5,8 @@ import { useNavigate } from 'react-router-dom';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [userRole, setUserRole] = useState(null);
-  const [userRole1, setUserRole1] = useState(null);
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')));
+  const [userRole, setUserRole] = useState(() => localStorage.getItem('role'));
   const [token, setToken] = useState(() => localStorage.getItem('token'));
   const navigate = useNavigate();
 
@@ -24,7 +23,7 @@ export const AuthProvider = ({ children }) => {
   const loginUser = useCallback(async ({ emailAddress, password, role }) => {
     let loginUrl = '';
 
-    switch (userRole1) {
+    switch (role) {
       case 'Manufacturer':
         loginUrl = 'https://med-tech-server.onrender.com/api/manufacturers/auth/login';
         break;
@@ -35,10 +34,11 @@ export const AuthProvider = ({ children }) => {
         loginUrl = 'https://med-tech-server.onrender.com/api/retailer/auth/login';
         break;
       default:
-        console.error('Invalid role:', userRole1);
+        console.error('Invalid role:', role);
         return;
     }
 
+    console.log('Attempting login with URL:', loginUrl);
     try {
       const response = await axios.post(loginUrl, {
         emailAddress,
@@ -46,10 +46,10 @@ export const AuthProvider = ({ children }) => {
       });
       console.log('Login Response:', response);
 
-      if (response.data && response.data.accessToken) {
+      if (response.data && response.data.token) {
+        console.log("Auth data.user: ", response.data.user);
         setUser(response.data.user);
-        setUserRole(role); // Set the role after login
-        setToken(response.data.accessToken);
+        setToken(response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         localStorage.setItem('role', role); // Store role in localStorage
         navigate('/dashboard');
@@ -59,12 +59,12 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Login failed', error.response ? error.response.data : error.message);
     }
-  }, [userRole1, navigate]);
+  }, [navigate]);
 
   const registerUser = useCallback(async ({ emailAddress, password, role }) => {
     let registerUrl = '';
 
-    switch (userRole) {
+    switch (role) {
       case 'Manufacturer':
         registerUrl = 'https://med-tech-server.onrender.com/api/manufacturers/auth/register';
         break;
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
         registerUrl = 'https://med-tech-server.onrender.com/api/retailer/auth/register';
         break;
       default:
-        console.error('Invalid role:', userRole);
+        console.error('Invalid role:', role);
         return;
     }
 
@@ -86,10 +86,9 @@ export const AuthProvider = ({ children }) => {
       });
       console.log('Registration Response:', response);
 
-      if (response.data && response.data.accessToken) {
+      if (response.data && response.data.token) {
         setUser(response.data.user);
-        setUserRole(role); // Set the role after registration
-        setToken(response.data.accessToken);
+        setToken(response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         localStorage.setItem('role', role); // Store role in localStorage
         navigate('/dashboard');
@@ -99,11 +98,10 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Registration failed', error.response ? error.response.data : error.message);
     }
-  }, [userRole, navigate]);
+  }, [navigate]);
 
   const logoutUser = useCallback(() => {
     setUser(null);
-    setUserRole(null);
     setToken(null);
     localStorage.removeItem('user');
     localStorage.removeItem('token');
@@ -119,9 +117,7 @@ export const AuthProvider = ({ children }) => {
     registerUser,
     logoutUser,
     userRole,
-    userRole1,
-    setUserRole,
-    setUserRole1
+    setUserRole
   };
 
   return (

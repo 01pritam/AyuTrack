@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { FaIndustry, FaTruck, FaStore } from 'react-icons/fa';
 
 const Login = () => {
-  const { loginUser, userRole, setUserRole, setUserRole1 } = useContext(AuthContext);
+  const { loginUser, userRole, setUserRole } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
@@ -25,10 +25,17 @@ const Login = () => {
   }, [location]);
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setUserRole1(userRole); // Ensure userRole1 is set before calling loginUser
-    loginUser({ emailAddress: email, password, role });
+    if (!userRole || !email || !password) {
+      console.error('Please fill out all fields and select a role.');
+      return;
+    }
+    try {
+      await loginUser({ emailAddress: email, password ,role:userRole});
+    } catch (error) {
+      console.error('Login failed', error.response ? error.response.data : error.message);
+    }
   };
 
   // Render the role selection screen if no role is selected

@@ -1,4 +1,3 @@
-// 
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from './AuthContext';
@@ -9,10 +8,12 @@ export const InventoryProvider = ({ children }) => {
   const [InventoryData, setInventoryData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { token } = useContext(AuthContext);
+  const { token, user } = useContext(AuthContext);
+
   const updateInventoryData = (newData) => {
     setInventoryData(newData);
   };
+
   useEffect(() => {
     const fetchInventoryData = async () => {
       if (!token) {
@@ -21,8 +22,30 @@ export const InventoryProvider = ({ children }) => {
       }
 
       try {
-        console.log("token state=",token);
-        const response = await axios.get('https://med-tech-server.onrender.com/api/retailer/inventory/items');
+        let url = '';
+
+        switch (user?.role) {
+          case 'Manufacturer':
+            url = 'https://med-tech-server.onrender.com/api/manufacturer/inventory/items';
+            break;
+          case 'Distributor':
+            url = 'https://med-tech-server.onrender.com/api/distributor/inventory/items';
+            break;
+          case 'Retailer':
+            url = 'https://med-tech-server.onrender.com/api/retailer/inventory/items';
+            break;
+          default:
+            console.error('Invalid role:', user?.role);
+            setLoading(false);
+            return;
+        }
+
+        console.log("Fetching inventory data from:", url);
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setInventoryData(response.data);
         setLoading(false);
       } catch (error) {
@@ -33,7 +56,7 @@ export const InventoryProvider = ({ children }) => {
     };
 
     fetchInventoryData();
-  }, [token]);
+  }, [token, user?.role]);
 
   return (
     <InventoryContext.Provider value={{ InventoryData, setInventoryData, updateInventoryData, loading, error }}>

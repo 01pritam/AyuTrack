@@ -1,12 +1,38 @@
+import React, { useState, useContext } from "react";
 import { Menu, X } from "lucide-react";
-import { useState, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { navItems } from "../../data";
+import { navItems as baseNavItems } from "../../data"; // Import base nav items
 
 const Navbar = () => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  const { isSignedIn,token, logoutUser } = useContext(AuthContext);
-  console.log("token state : ",token);
+  const { token, logoutUser, userRole } = useContext(AuthContext);
+
+  // Define role-based navigation items
+  const roleBasedNavItems = {
+    Manufacturer: [
+      { label: "Inventory", href: "/minventory" },
+      { label: "Billings", href: "/billings" },
+    ],
+    Distributor: [
+      { label: "Track Orders", href: "/track-orders" },
+    ],
+    Retailer: [
+      { label: "Inventory", href: "/inventory" },
+      { label: "Profile", href: "/profile" },
+    ],
+  };
+
+  // Filter base nav items to exclude role-specific items
+  const filteredBaseNavItems = baseNavItems.filter(item => 
+    !Object.values(roleBasedNavItems).flat().some(roleItem => roleItem.href === item.href)
+  );
+
+  // Combine filtered base items and role-based items
+  const navItems = [
+    ...filteredBaseNavItems,
+    ...(roleBasedNavItems[userRole] || [])
+  ];
+
   const toggleNavbar = () => {
     setMobileDrawerOpen(!mobileDrawerOpen);
   };
