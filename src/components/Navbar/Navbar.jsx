@@ -6,7 +6,7 @@ import { navItems } from "../../data";
 const Navbar = () => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const { isSignedIn,token, logoutUser } = useContext(AuthContext);
-
+  console.log("token state : ",token);
   const toggleNavbar = () => {
     setMobileDrawerOpen(!mobileDrawerOpen);
   };
@@ -77,7 +77,7 @@ const Navbar = () => {
               ))}
             </ul>
             <div className="flex flex-col space-y-4 mt-6">
-              {!isSignedIn ? (
+              {!token ? (
                 <>
                   <a 
                     href="/signin"

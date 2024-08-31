@@ -35,7 +35,7 @@ function Billings() {
 
   return (
     <>
-      <main className="m-5 p-6 md:max-w-2xl lg:max-w-4xl mx-auto bg-white rounded-lg shadow-lg">
+      <div className="mt-5 p-6 md:max-w-2xl lg:max-w-4xl mx-auto bg-white rounded-lg shadow-lg">
         {showInvoice ? (
           <>
             <ReactToPrint
@@ -304,7 +304,7 @@ function Billings() {
             </div>
           </>
         )}
-      </main>
+      </div>
     </>
   );
 }

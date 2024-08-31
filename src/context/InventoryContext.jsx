@@ -10,7 +10,9 @@ export const InventoryProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { token } = useContext(AuthContext);
-
+  const updateInventoryData = (newData) => {
+    setInventoryData(newData);
+  };
   useEffect(() => {
     const fetchInventoryData = async () => {
       if (!token) {
@@ -34,7 +36,7 @@ export const InventoryProvider = ({ children }) => {
   }, [token]);
 
   return (
-    <InventoryContext.Provider value={{ InventoryData, setInventoryData, loading, error }}>
+    <InventoryContext.Provider value={{ InventoryData, setInventoryData, updateInventoryData, loading, error }}>
       {children}
     </InventoryContext.Provider>
   );
