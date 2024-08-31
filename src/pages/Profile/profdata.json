@@ -1,0 +1,46 @@
+{
+    "profile": {
+      "name": "Dr. Lee",
+      "specialization": "General Practice",
+      "qualifications": "M.B.B.S, D.O, M.M.E.D, M.Sc, D.MSc",
+      "workplace": {
+        "role": "Administrator",
+        "clinic": "Ralis Clinic",
+        "department": "Family Clinic & Surgery"
+      },
+      "address": "Paragon Shopping city, Singapore."
+    },
+    "accountSections": [
+      {
+        "title": "Your Orders",
+        "description": "Track, return, or buy things again",
+        "image": "https://plus.unsplash.com/premium_photo-1683798464819-d1376249293e?q=80&w=1480&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        "title": "Login & security",
+        "description": "Edit login, name, and mobile number",
+        "image": "https://plus.unsplash.com/premium_photo-1700830452666-ce1f5f478d21?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        "title": "Prime",
+        "description": "View benefits and payment settings",
+        "image": "https://images.unsplash.com/photo-1480694313141-fce5e697ee25?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        "title": "Your Addresses",
+        "description": "Edit addresses for orders and gifts",
+        "image": "https://plus.unsplash.com/premium_photo-1679768606092-5043ce780f8d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        "title": "Your business account",
+        "description": "Sign up for free to save up to 28% with GST invoice and bulk discounts and purchase on credit.",
+        "image": "https://plus.unsplash.com/premium_photo-1661774987792-17a95638d874?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        "title": "Payment options",
+        "description": "Edit or add payment methods",
+        "image": "https://plus.unsplash.com/premium_photo-1682104376321-63afb07e8f97?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      }
+    ]
+  }
+  
