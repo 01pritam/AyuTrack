@@ -2,32 +2,30 @@ import React from 'react';
 
 export default function Table({ list, total }) {
     return (
-        <>
-            <table width="100% " className="mb-10">
-                <thead>
-                    <tr className="bg-gray-100 p-1">
-                        <td className="font-bold">Description</td>
-                        <td className="font-bold">Quantity</td>
-                        <td className="font-bold">Price</td>
-                        <td className="font-bold">Amount</td>
+        <div className="overflow-x-auto bg-white shadow-md rounded-lg p-4">
+            <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                    <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
                     </tr>
                 </thead>
-                {list.map(({ id, description, quantity, price, amount }) => (
-                    <React.Fragment key={id}>
-                        <tbody>
-                            <tr className="h-10">
-                                <td>{description}</td>
-                                <td>{quantity}</td>
-                                <td>{price}</td>
-                                <td>{amount}</td>
-                            </tr>
-                        </tbody>
-                    </React.Fragment>
-                ))}
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {list.map(({ id, description, quantity, price, amount }) => (
+                        <tr key={id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{description}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{quantity}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{price}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{amount}</td>
+                        </tr>
+                    ))}
+                </tbody>
             </table>
-            <div>
-                <h2 className="flex items-end justify-end text-gray-800 text-4xl">Rupees. {total.toLocaleString()}</h2>
+            <div className="mt-4 text-right">
+                <h2 className="text-2xl font-bold text-gray-900">Total: ₹{total.toLocaleString()}</h2>
             </div>
-        </>
+        </div>
     );
 }

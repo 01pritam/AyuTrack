@@ -5,8 +5,8 @@ import Button from "./Button";
 
 function EditInfo({ invoiceData, handleChange, setShowInvoice }) {
   return (
-    <div className="flex flex-col justify-center">
-      <article className="md:grid grid-cols-2 gap-10">
+    <div className="p-8 max-w-4xl mx-auto">
+      <article className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         <InputField
           label="Your full name"
           name="name"
@@ -23,7 +23,7 @@ function EditInfo({ invoiceData, handleChange, setShowInvoice }) {
         />
       </article>
 
-      <article className="md:grid grid-cols-3 gap-10">
+      <article className="grid grid-cols-1 gap-8 md:grid-cols-3">
         <InputField
           label="Enter your email"
           name="email"
@@ -49,7 +49,7 @@ function EditInfo({ invoiceData, handleChange, setShowInvoice }) {
         />
       </article>
 
-      <article className="md:grid grid-cols-2 gap-10">
+      <article className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <InputField
           label="Enter your bank name"
           name="bankName"
@@ -66,7 +66,7 @@ function EditInfo({ invoiceData, handleChange, setShowInvoice }) {
         />
       </article>
 
-      <article className="md:grid grid-cols-2 gap-10 md:mt-16">
+      <article className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         <InputField
           label="Enter your client's name"
           name="clientName"
@@ -83,7 +83,7 @@ function EditInfo({ invoiceData, handleChange, setShowInvoice }) {
         />
       </article>
 
-      <article className="md:grid grid-cols-3 gap-10">
+      <article className="grid grid-cols-1 gap-8 md:grid-cols-3">
         <InputField
           label="Invoice Number"
           name="invoiceNumber"

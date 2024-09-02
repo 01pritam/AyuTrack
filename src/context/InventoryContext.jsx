@@ -26,7 +26,7 @@ export const InventoryProvider = ({ children }) => {
 
         switch (user?.role) {
           case 'Manufacturer':
-            url = 'https://med-tech-server.onrender.com/api/manufacturer/inventory/items';
+            url = 'https://med-tech-server.onrender.com/api/manufacturers/inv/productsbymanf';
             break;
           case 'Distributor':
             url = 'https://med-tech-server.onrender.com/api/distributor/inventory/items';
@@ -43,7 +43,7 @@ export const InventoryProvider = ({ children }) => {
         console.log("Fetching inventory data from:", url);
         const response = await axios.get(url, {
           headers: {
-            Authorization: `Bearer ${token}`
+            authorization: `Bearer ${token}`
           }
         });
         setInventoryData(response.data);

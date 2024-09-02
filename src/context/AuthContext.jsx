@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')));
   const [userRole, setUserRole] = useState(() => localStorage.getItem('role'));
   const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const [billingDetails, setBillingDetails] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -117,6 +118,8 @@ export const AuthProvider = ({ children }) => {
     registerUser,
     logoutUser,
     userRole,
+    setBillingDetails,
+    billingDetails,
     setUserRole
   };
 

@@ -1,13 +1,10 @@
-// src/components/CaptchaVerification.jsx
 import React from 'react';
 
-const CaptchaVerification = () => {
-  return (
-    <div>
-      {/* Implement Captcha Verification UI here */}
-      <p>Captcha Verification Component</p>
-    </div>
-  );
-};
+const CaptchaVerification = () => (
+  <div className="mt-6">
+    <p className="text-sm font-medium text-gray-700">Captcha Verification Component</p>
+    {/* Insert actual Captcha UI component */}
+  </div>
+);
 
 export default CaptchaVerification;

@@ -10,11 +10,13 @@ const Navbar = () => {
   // Define role-based navigation items
   const roleBasedNavItems = {
     Manufacturer: [
+      { label: "Orders", href: "/morders" },
       { label: "Inventory", href: "/minventory" },
-      { label: "Billings", href: "/billings" },
+      { label: "Billings", href: "/billings" }
     ],
     Distributor: [
       { label: "Track Orders", href: "/track-orders" },
+      { label: "Orders", href: "/dorders" },
     ],
     Retailer: [
       { label: "Inventory", href: "/inventory" },
@@ -38,23 +40,20 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 py-4 bg-teal-100 backdrop-blur-lg border-b border-neutral-200 shadow-md">
+    <nav className="sticky top-0 z-50 py-4 bg-blue-500 backdrop-blur-lg border-b border-neutral-200 shadow-md">
       <div className="container px-4 mx-auto relative lg:text-sm">
         <div className="flex justify-between items-center">
           <div className="flex items-center flex-shrink-0">
-            <h1 className="text-2xl font-semibold tracking-tight bg-gradient-to-r from-blue-500 to-teal-600 bg-clip-text text-transparent font-suse">
-              Ayu
+            <h1 className="text-2xl font-semibold tracking-tight bg-white bg-clip-text text-transparent font-suse">
+              AyuTrack
             </h1>
-            <span className="text-2xl font-semibold tracking-tight bg-gradient-to-r from-teal-600 to-green-700 bg-clip-text text-transparent font-suse">
-              Track
-            </span>
           </div>
           <ul className="hidden lg:flex ml-14 space-x-10">
             {navItems.map((item, index) => (
               <li key={index}>
                 <a 
                   href={item.href} 
-                  className="text-gray-700 hover:text-blue-400 transition-colors duration-200">
+                  className="text-white">
                   {item.label}
                 </a>
               </li>
@@ -90,13 +89,13 @@ const Navbar = () => {
           </div>
         </div>
         {mobileDrawerOpen && (
-          <div className="fixed right-0 z-20 bg-white w-full p-6 flex flex-col justify-center items-center lg:hidden">
+          <div className="fixed right-0 z-20 bg-blue-500 w-full p-6 flex flex-col justify-center items-center lg:hidden">
             <ul className="space-y-4">
               {navItems.map((item, index) => (
                 <li key={index}>
                   <a 
                     href={item.href} 
-                    className="text-gray-700 hover:text-blue-700 transition-colors duration-200">
+                    className="text-white">
                     {item.label}
                   </a>
                 </li>

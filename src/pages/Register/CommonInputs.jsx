@@ -68,65 +68,54 @@ const CommonInputs = ({ onChange }) => (
       </label>
     </div>
     
-    <label className="flex flex-col text-sm font-medium text-gray-700">
-      User Role
-      <select 
-        name="role" 
+    <div className="space-y-4">
+  <label className="block text-sm font-medium text-gray-700">
+    Address
+    <div className="grid gap-6 mt-2 md:grid-cols-2">
+      <input 
+        type="text" 
+        name="street" 
+        placeholder="Street" 
         onChange={onChange} 
         required 
-        className="mt-2 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-      >
-        <option value="Supplier">Supplier</option>
-        <option value="Distributor">Distributor</option>
-        <option value="Medical Institution">Medical Institution</option>
-      </select>
-    </label>
-    
-    <div className="grid gap-6 md:grid-cols-2">
-      <label className="flex flex-col text-sm font-medium text-gray-700">
-        Address
-        <input 
-          type="text" 
-          name="street" 
-          placeholder="Street" 
-          onChange={onChange} 
-          required 
-          className="mt-2 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-        />
-        <input 
-          type="text" 
-          name="city" 
-          placeholder="City" 
-          onChange={onChange} 
-          required 
-          className="mt-2 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-        />
-        <input 
-          type="text" 
-          name="state" 
-          placeholder="State" 
-          onChange={onChange} 
-          required 
-          className="mt-2 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-        />
-        <input 
-          type="text" 
-          name="postalCode" 
-          placeholder="Postal Code" 
-          onChange={onChange} 
-          required 
-          className="mt-2 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-        />
-        <input 
-          type="text" 
-          name="country" 
-          placeholder="Country" 
-          onChange={onChange} 
-          required 
-          className="mt-2 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-        />
-      </label>
+        className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+      />
+      <input 
+        type="text" 
+        name="city" 
+        placeholder="City" 
+        onChange={onChange} 
+        required 
+        className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+      />
+      <input 
+        type="text" 
+        name="state" 
+        placeholder="State" 
+        onChange={onChange} 
+        required 
+        className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+      />
+      <input 
+        type="text" 
+        name="postalCode" 
+        placeholder="Postal Code" 
+        onChange={onChange} 
+        required 
+        className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+      />
+      <input 
+        type="text" 
+        name="country" 
+        placeholder="Country" 
+        onChange={onChange} 
+        required 
+        className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+      />
     </div>
+  </label>
+</div>
+
     
     <label className="flex flex-col text-sm font-medium text-gray-700">
       Security Question

@@ -1,169 +1,205 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 
-export default function TableForm({
-  description,
-  setDescription,
-  quantity,
-  setQuantity,
-  price,
-  setPrice,
-  amount,
-  setAmount,
-  list,
-  setList,
-  total,
-  setTotal,
-}) {
-  const [isEditing, setIsEditing] = useState(false);
+export default function TableForm({ list, setList, total,setTotal }) {
+  const [newRow, setNewRow] = useState({ description: "", quantity: "", price: "", batchNo: "" });
+  const [isEditing, setIsEditing] = useState(null);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!description || !quantity || !price) {
-      alert("Please fill in all inputs");
-    } else {
-      const newItems = {
-        id: uuidv4(),
-        description,
-        quantity,
-        price: parseFloat(price), // Ensure price is a number
-        amount: parseFloat(amount),
-      };
-      setDescription("");
-      setQuantity("");
-      setPrice("");
-      setAmount("");
-      setList([...list, newItems]);
-      setIsEditing(false);
-    }
-  };
-
-  useEffect(() => {
-    const calculateAmount = () => {
-      setAmount(quantity * price);
-    };
-
-    calculateAmount();
-  }, [price, quantity, setAmount]);
+  // Refs to manage focus
+  const quantityRef = useRef(null);
+  const priceRef = useRef(null);
+  const addButtonRef = useRef(null);
 
   useEffect(() => {
     const calculateTotal = () => {
-      const sum = list.reduce((acc, item) => acc + item.amount, 0);
-      setTotal(sum);
+      const totalAmount = list.reduce((acc, item) => acc + parseFloat(item.amount), 0);
+      setTotal(totalAmount);
     };
-
     calculateTotal();
   }, [list, setTotal]);
-
-  const editRow = (id) => {
-    const editingRow = list.find((row) => row.id === id);
-    setList(list.filter((row) => row.id !== id));
-    setIsEditing(true);
-    setDescription(editingRow.description);
-    setQuantity(editingRow.quantity);
-    setPrice(editingRow.price);
+  console.log("Total : ",total);
+  const handleChange = (e, field) => {
+    setNewRow({ ...newRow, [field]: e.target.value });
   };
 
-  const deleteRow = (id) => {
-    setList(list.filter((row) => row.id !== id));
+  const handleEditChange = (e, id, field) => {
+    const updatedList = list.map(item => item.id === id ? { ...item, [field]: e.target.value } : item);
+    setList(updatedList);
+  };
+
+  const handleAddRow = () => {
+    if (!newRow.description || !newRow.quantity || !newRow.price || !newRow.batchNo) {
+      alert("Please fill in all inputs");
+      return;
+    }
+    const amount = parseFloat(newRow.quantity) * parseFloat(newRow.price);
+    setList([...list, { ...newRow, id: uuidv4(), amount }]);
+    setNewRow({ description: "", quantity: "", price: "", batchNo: "" });
+  };
+
+  const handleDeleteRow = (id) => {
+    const filteredList = list.filter(item => item.id !== id);
+    setList(filteredList);
+  };
+
+  const handleEditRow = (id) => {
+    setIsEditing(id);
+  };
+
+  const handleSaveRow = () => {
+    setIsEditing(null);
+  };
+
+  const handleKeyDown = (e, field) => {
+    if (e.key === "Enter") {
+      if (field === "description") {
+        quantityRef.current.focus();
+      } else if (field === "quantity") {
+        priceRef.current.focus();
+      } else if (field === "price") {
+        handleAddRow();
+        setTimeout(() => {
+          document.getElementById('description-input').focus();
+        }, 100); // Give some time for the state to reset the inputs
+      }
+    }
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <div className="flex flex-col md:mt-16">
-          <label htmlFor="description">Item description</label>
-          <input
-            type="text"
-            name="description"
-            id="description"
-            placeholder="Item description"
-            maxLength={96}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-
-        <div className="md:grid grid-cols-3 gap-10">
-          <div className="flex flex-col">
-            <label htmlFor="quantity">Quantity</label>
-            <input
-              type="text"
-              name="quantity"
-              id="quantity"
-              placeholder="Quantity"
-              maxLength={33}
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label htmlFor="price">Price</label>
-            <input
-              type="text"
-              name="price"
-              id="price"
-              placeholder="Price"
-              maxLength={33}
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label htmlFor="amount">Amount</label>
-            <p>{amount}</p>
-          </div>
-        </div>
-        <button
-          type="submit"
-          className="mt-5 mb-5 bg-blue-500 text-white font-bold py-2 px-8 rounded shadow border-2 border-blue-500 hover:bg-transparent hover:text-blue-500 transition-all duration-300"
-        >
-          {isEditing ? "Editing Row Item" : "Add Table Item"}
-        </button>
-      </form>
-      <table width="100%" className="mb-10">
-        <thead>
-          <tr className="bg-gray-100 p-1">
-            <td className="font-bold">Description</td>
-            <td className="font-bold">Quantity</td>
-            <td className="font-bold">Price</td>
-            <td className="font-bold">Amount</td>
+    <div className="relative overflow-x-auto bg-gray-100 shadow-md sm:rounded-lg p-4">
+      <h1 className="text-3xl font-extrabold text-gray-900 mb-4">Invoice of Billing</h1>
+      <table className="w-full text-sm text-left text-gray-500 bg-white shadow-sm rounded-md">
+        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th className="px-6 py-3 border-b">Description</th>
+            <th className="px-6 py-3 border-b">Batch No</th>
+            <th className="px-6 py-3 border-b">Quantity</th>
+            <th className="px-6 py-3 border-b">Price</th>
+            <th className="px-6 py-3 border-b">Amount</th>
+            <th className="px-6 py-3 border-b">Actions</th>
           </tr>
         </thead>
-        {list.map(({ id, description, quantity, price, amount }) => (
-          <React.Fragment key={id}>
-            <tbody>
-              <tr>
-                <td>{description}</td>
-                <td>{quantity}</td>
-                <td>{price}</td>
-                <td>{amount}</td>
-                <button
-                  onClick={() => deleteRow(id)}
-                  className="text-red-500 font-bold text-xl"
-                >
-                  <AiOutlineDelete />
-                </button>
-                <button
-                  onClick={() => editRow(id)}
-                  className="text-green-500 font-bold text-xl"
-                >
-                  <AiOutlineEdit />
-                </button>
-              </tr>
-            </tbody>
-          </React.Fragment>
-        ))}
+        <tbody className="bg-white">
+          {list.map(({ id, description, quantity, price, batchNo, amount }) => (
+            <tr key={id} className="border-b odd:bg-gray-50 even:bg-gray-100">
+              <td className="px-6 py-4">
+                {isEditing === id ? (
+                  <input
+                    type="text"
+                    value={description}
+                    onChange={(e) => handleEditChange(e, id, "description")}
+                    className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                ) : (
+                  description
+                )}
+              </td>
+              <td className="px-6 py-4">
+                {isEditing === id ? (
+                  <input
+                    type="text"
+                    value={batchNo}
+                    onChange={(e) => handleEditChange(e, id, "batchNo")}
+                    className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                ) : (
+                  batchNo
+                )}
+              </td>
+              <td className="px-6 py-4">
+                {isEditing === id ? (
+                  <input
+                    type="number"
+                    value={quantity}
+                    onChange={(e) => handleEditChange(e, id, "quantity")}
+                    className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                ) : (
+                  quantity
+                )}
+              </td>
+              <td className="px-6 py-4">
+                {isEditing === id ? (
+                  <input
+                    type="number"
+                    value={price}
+                    onChange={(e) => handleEditChange(e, id, "price")}
+                    className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                ) : (
+                  price
+                )}
+              </td>
+              <td className="px-6 py-4">{amount}</td>
+              <td className="px-6 py-4 flex space-x-2">
+                {isEditing === id ? (
+                  <button onClick={handleSaveRow} className="text-green-600 hover:text-green-900"><AiOutlineEdit /></button>
+                ) : (
+                  <button onClick={() => handleEditRow(id)} className="text-blue-600 hover:text-blue-900"><AiOutlineEdit /></button>
+                )}
+                <button onClick={() => handleDeleteRow(id)} className="text-red-600 hover:text-red-900"><AiOutlineDelete /></button>
+              </td>
+            </tr>
+          ))}
+          <tr>
+            <td className="px-6 py-4">
+              <input
+                type="text"
+                id="description-input"
+                value={newRow.description}
+                onChange={(e) => handleChange(e, "description")}
+                onKeyDown={(e) => handleKeyDown(e, "description")}
+                className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Description"
+              />
+            </td>
+            <td className="px-6 py-4">
+              <input
+                type="text"
+                value={newRow.batchNo}
+                onChange={(e) => handleChange(e, "batchNo")}
+                onKeyDown={(e) => handleKeyDown(e, "batchNo")}
+                className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Batch No"
+              />
+            </td>
+            <td className="px-6 py-4">
+              <input
+                type="number"
+                ref={quantityRef}
+                value={newRow.quantity}
+                onChange={(e) => handleChange(e, "quantity")}
+                onKeyDown={(e) => handleKeyDown(e, "quantity")}
+                className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Quantity"
+              />
+            </td>
+            <td className="px-6 py-4">
+              <input
+                type="number"
+                ref={priceRef}
+                value={newRow.price}
+                onChange={(e) => handleChange(e, "price")}
+                onKeyDown={(e) => handleKeyDown(e, "price")}
+                className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Price"
+              />
+            </td>
+            <td className="px-6 py-4">
+              {((parseFloat(newRow.quantity) || 0) * (parseFloat(newRow.price) || 0)).toFixed(2)}
+            </td>
+            <td className="px-6 py-4">
+              <button ref={addButtonRef} onClick={handleAddRow} className="text-green-600 hover:text-green-900 px-3 py-1 border border-green-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">Add</button>
+            </td>
+          </tr>
+        </tbody>
       </table>
-      <div>
-        <h2 className="flex items-end justify-end text-gray-800 text-4xl">
-          Total: {total.toLocaleString()}
-        </h2>
-      </div>
-    </>
+      <div className="mt-4 text-right">
+  <h2 className="text-2xl font-bold text-gray-900">
+    Total: ₹{(total ?? 0).toLocaleString()}
+  </h2>
+</div>
+    </div>
   );
 }
