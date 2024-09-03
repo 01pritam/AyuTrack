@@ -20,7 +20,7 @@ export const InventoryProvider = ({ children }) => {
         setLoading(false);
         return;
       }
-
+      
       try {
         let url = '';
 
@@ -29,7 +29,7 @@ export const InventoryProvider = ({ children }) => {
             url = 'https://med-tech-server.onrender.com/api/manufacturers/inv/productsbymanf';
             break;
           case 'Distributor':
-            url = 'https://med-tech-server.onrender.com/api/distributor/inventory/items';
+            url = 'https://med-tech-server.onrender.com/api/distributors/inv/inventory';
             break;
           case 'Retailer':
             url = 'https://med-tech-server.onrender.com/api/retailer/inventory/items';
@@ -46,7 +46,14 @@ export const InventoryProvider = ({ children }) => {
             authorization: `Bearer ${token}`
           }
         });
-        setInventoryData(response.data);
+        console.log("only response:",response);
+        console.log("response: ",response.data.inventory);
+        if(user?.role === 'Distributor') {
+          setInventoryData(response.data.inventory);
+        } else {
+          setInventoryData(response.data);
+        }
+        console.log("INventory data: ",InventoryData);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching inventory items:', error);

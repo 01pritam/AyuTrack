@@ -8,7 +8,7 @@ import MedicalInstitutionInputs from './MedicalInstitutionInputs';
 import CaptchaVerification from './CaptchaVerification';
 import TermsAndConditions from './TermsAndConditions';
 import { useNavigate } from 'react-router-dom';
-
+import leftimg from '../../assets/reg.jpg'
 const RegistrationForm = () => {
   const { registerUser, loading } = useContext(AuthContext);
   const { role, setRole } = useContext(UserRoleContext);
@@ -42,7 +42,7 @@ const RegistrationForm = () => {
       <div className="flex w-4/5 lg:w-3/5 h-auto max-h-[80vh] bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="w-2/5 flex-shrink-0">
           <img 
-            src="https://i.pinimg.com/564x/48/ab/6e/48ab6efa0c827b8d81b2e15e7560bf9e.jpg" 
+            src={leftimg} 
             alt="Left Side" 
             className="w-full h-full object-cover" 
           />

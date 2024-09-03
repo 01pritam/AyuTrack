@@ -1,7 +1,7 @@
 // index.js in data folder
 export const navItems = [
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Orders", href: "/orders" },
+  
   { label: "Track Orders", href: "/track-orders" },
   { label: "Billings", href: "/billings" },
   { label: "Inventory", href: "/inventory" },

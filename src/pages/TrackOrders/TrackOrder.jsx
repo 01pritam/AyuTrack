@@ -1,22 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
-import StepperModal from '../../components/StepperModal';
-import { TrackOrderContext } from '../../context/TrackOrderContext';
-import OrderForm from './OrderForm';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { AuthContext } from '../../context/AuthContext';
-import FeedbackButton from './FeedbackButton'; // Import the FeedbackButton component
-
-const TrackOrder = () => {
-  const { addReturn, returnedItems } = useContext(TrackOrderContext);
+import OrderForm from './OrderForm';
+const ImprovedOrderTracking = () => {
   const [retailOrderData, setRetailOrderData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [modalOpen, setModalOpen] = useState(false);
-  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
-  const [returnModalOpen, setReturnModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [returnQuantity, setReturnQuantity] = useState(0);
+  const [expandedOrders, setExpandedOrders] = useState({});
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [showReturnModal, setShowReturnModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [feedback, setFeedback] = useState('');
+  const [returnQuantity, setReturnQuantity] = useState('');
   const [returnReason, setReturnReason] = useState('');
-  const [showReturnedTab, setShowReturnedTab] = useState(false);
-  const [isOrderFormOpen, setIsOrderFormOpen] = useState(false);
+  const [loading, setLoading] = useState(false); // Add loading state
+  const [showOrderForm, setShowOrderForm] = useState(false);
   const { token } = useContext(AuthContext);
 
   useEffect(() => {
@@ -34,31 +31,15 @@ const TrackOrder = () => {
 
   const handleSearch = (e) => setSearchQuery(e.target.value);
 
-  const handleReturn = (item) => {
-    setSelectedItem(item);
-    setReturnModalOpen(true);
+  const toggleOrderExpansion = (orderId) => {
+    setExpandedOrders(prev => ({
+      ...prev,
+      [orderId]: !prev[orderId]
+    }));
   };
-
-  const handleReturnQuantityChange = (e) => setReturnQuantity(parseInt(e.target.value, 10));
-
-  const handleReturnReasonChange = (e) => setReturnReason(e.target.value);
-
-  const handleReturnSubmit = () => {
-    if (returnQuantity > 0 && returnReason) {
-      addReturn(returnQuantity, returnReason);
-      setReturnModalOpen(false);
-      setReturnQuantity(0);
-      setReturnReason('');
-    }
-  };
-
-  const handleOrderFormOpen = () => setIsOrderFormOpen(true);
-
-  const handleOrderFormClose = () => setIsOrderFormOpen(false);
 
   const handleDownloadInvoice = (orderId) => {
     const order = retailOrderData.find(item => item._id === orderId);
-
     if (order && order.billingDetails && order.billingDetails.billingPdf) {
       const billingPdfUrl = order.billingDetails.billingPdf;
       const link = document.createElement('a');
@@ -71,152 +52,354 @@ const TrackOrder = () => {
       console.error('Billing details not found or PDF URL is missing');
     }
   };
+  const handlePay = async (orderId) => {
+    console.log("orderid from handle pay",orderId);
+    try {
+      const response = await fetch(`https://med-tech-server.onrender.com/api/manufacturers/orders/${orderId}/payment-status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ paymentStatus: 'Completed' })
+      });
+  
+      // Check if the response is JSON
+      const contentType = response.headers.get('Content-Type');
+      if (contentType && contentType.includes('application/json')) {
+        const responseData = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(responseData.message || 'Failed to process the payment');
+        }
+  
+        // Update the state to reflect the payment status change
+        setOrders(prevOrders =>
+          prevOrders.map(order =>
+            order._id === orderId ? { ...order, paymentStatus: 'Completed' } : order
+          )
+        );
+        alert('Payment processed successfully');
+      } else {
+        throw new Error('Unexpected response format');
+      }
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      alert('Failed to process the payment: ' + error.message);
+    }
+  };
 
-  const filteredData = retailOrderData.filter(item =>
-    item.medicines[0].name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleFeedbackSubmit = async () => {
+    if (!feedback.trim()) {
+      alert('Please provide feedback');
+      return;
+    }
+    
+    setLoading(true); // Set loading state to true
+    try {
+      const feedbackResponse = await fetch('https://feedback-18k6.onrender.com/analyze-feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: feedback }),
+      });
+
+      if (!feedbackResponse.ok) {
+        throw new Error('Error analyzing feedback');
+      }
+
+      const feedbackData = await feedbackResponse.json();
+      const ratingMap = {
+        1: 'Very Poor',
+        2: 'Poor',
+        3: 'Neutral',
+        4: 'Good',
+        5: 'Excellent',
+      };
+
+      const ratingString = ratingMap[feedbackData.rating] || 'Neutral';
+      console.log("ratingString: ", ratingString);
+
+      const response = await fetch(`https://med-tech-server.onrender.com/api/manufacturers/orders/${selectedOrder._id}/feedback`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          comment: feedback,
+          rating: ratingString,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error submitting feedback');
+      }
+
+      alert('Feedback submitted successfully');
+      setFeedback(''); // Clear feedback input field
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to submit feedback');
+    } finally {
+      setLoading(false); // Set loading state to false
+      setShowFeedbackModal(false); // Close modal
+    }
+  };
+
+  const handleReturnSubmit = async () => {
+    if (selectedOrder && returnQuantity && returnReason) {
+      try {
+        await fetch(`https://med-tech-server.onrender.com/api/manufacturers/orders/return`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ quantity: returnQuantity, reason: returnReason })
+        });
+        alert('Return request submitted successfully');
+      } catch (error) {
+        console.error('Error submitting return:', error);
+        alert('Failed to submit return');
+      } finally {
+        setShowReturnModal(false);
+        setReturnQuantity('');
+        setReturnReason('');
+      }
+    }
+  };
+
+  const filteredData = Array.isArray(retailOrderData) 
+    ? retailOrderData.filter(item =>
+        item.medicines.some(medicine => 
+          medicine.name.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      ) 
+    : [];
+
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'delivered': return 'bg-green-100 text-green-800';
+      case 'processing': return 'bg-blue-100 text-blue-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   return (
     <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Order Tracking</h1>
       <input
         type="text"
-        placeholder="Search by Name"
+        placeholder="Search by Medicine Name"
         value={searchQuery}
         onChange={handleSearch}
         className="border rounded p-2 mb-4 w-full"
       />
-      <div className="flex mb-4">
-        <button
-          className={`px-4 py-2 rounded ${!showReturnedTab ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          onClick={() => setShowReturnedTab(false)}
+      <button
+        onClick={() => setShowOrderForm(true)}
+        className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
         >
-          Orders
-        </button>
-        <button
-          className={`ml-2 px-4 py-2 rounded ${showReturnedTab ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          onClick={() => setShowReturnedTab(true)}
-        >
-          Returned Items
-        </button>
-      </div>
-      {showReturnedTab ? (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-300">
-            <thead>
-              <tr>
-                {/* Table headers for returned items */}
-              </tr>
-            </thead>
-            <tbody>
-              {/* Table rows for returned items */}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-300">
-            <thead>
-              <tr>
-                <th className="px-4 py-2">Medicine Name</th>
-                <th className="px-4 py-2">Batch No</th>
-                <th className="px-4 py-2">MRP</th>
-                <th className="px-4 py-2">Production Date</th>
-                <th className="px-4 py-2">Expiry Date</th>
-                <th className="px-4 py-2">Order Status</th>
-                <th className="px-4 py-2">Payment Status</th>
-                <th className="px-4 py-2">Invoice</th>
-                <th className="px-4 py-2">Feedback</th> {/* Added Feedback column */}
-                <th className="px-4 py-2">Return</th> {/* Added Return column */}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.map((item) => (
-                <tr key={item._id}>
-                  <td className="border px-4 py-2">{item.medicines[0].name}</td>
-                  <td className="border px-4 py-2">{item.medicines[0].batchNo}</td>
-                  <td className="border px-4 py-2">{item.medicines[0].mrp}</td>
-                  <td className="border px-4 py-2">{new Date(item.medicines[0].productionDate).toLocaleDateString()}</td>
-                  <td className="border px-4 py-2">{new Date(item.medicines[0].expiryDate).toLocaleDateString()}</td>
-                  <td className="border px-4 py-2">{item.orderStatus}</td>
-                  <td className="border px-4 py-2">{item.paymentStatus}</td>
-                  <td className="border px-4 py-2">
+        Order Now
+    </button>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-4 py-2 text-left">Order ID</th>
+              <th className="px-4 py-2 text-left">Order Status</th>
+              <th className="px-4 py-2 text-left">Payment Status</th>
+              <th className="px-4 py-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredData.map((order) => (
+              <React.Fragment key={order._id}>
+                <tr className="border-b">
+                  <td className="px-4 py-2">{order._id}</td>
+                  <td className="px-4 py-2">
+                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(order.orderStatus)}`}>
+                      {order.orderStatus}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(order.paymentStatus)}`}>
+                      {order.paymentStatus}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2">
                     <button
-                      onClick={() => handleDownloadInvoice(item._id)}
-                      className="bg-blue-500 text-white px-4 py-2 rounded"
+                      onClick={() => toggleOrderExpansion(order._id)}
+                      className="text-blue-500 hover:text-blue-700 mr-2"
+                    >
+                      {expandedOrders[order._id] ? <FaChevronUp /> : <FaChevronDown />}
+                    </button>
+                    <button
+                      onClick={() => handleDownloadInvoice(order._id)}
+                      className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
                     >
                       Download Invoice
                     </button>
                   </td>
-                  <td className="border px-4 py-2">
-                    {item.orderStatus === 'Delivered' && (
-                      <FeedbackButton item={item} />
-                    )}
-                  </td>
-                  <td className="border px-4 py-2">
-                    {item.orderStatus === 'Delivered' && (
-                      <button
-                        onClick={() => handleReturn(item)}
-                        className="bg-red-500 text-white px-4 py-2 rounded"
-                      >
-                        Return
-                      </button>
-                    )}
-                  </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <button
-            onClick={handleOrderFormOpen}
-            className="bg-green-500 text-white px-4 py-2 rounded mt-4"
-          >
-            Order to Manufacturer
-          </button>
-        </div>
-      )}
-      {modalOpen && <StepperModal setModalOpen={setModalOpen} />}
-      {isOrderFormOpen && <OrderForm onClose={handleOrderFormClose} />}
-      {returnModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded shadow-lg">
-            <h2 className="text-lg font-bold mb-4">Return {selectedItem?.medicines[0].name}</h2>
-            <div className="mb-4">
-              <label htmlFor="returnQuantity" className="block mb-2">Return Quantity</label>
-              <input
-                type="number"
-                id="returnQuantity"
-                value={returnQuantity}
-                onChange={handleReturnQuantityChange}
-                className="border rounded p-2 w-full"
-              />
+                {expandedOrders[order._id] && (
+                  <tr>
+                    <td colSpan="4" className="px-4 py-2">
+                      <table className="min-w-full bg-gray-50">
+                        <thead>
+                          <tr className="bg-gray-200">
+                            <th className="px-4 py-2 text-left text-xs">Medicine Name</th>
+                            <th className="px-4 py-2 text-left text-xs">Batch No</th>
+                            <th className="px-4 py-2 text-left text-xs">MRP</th>
+                            <th className="px-4 py-2 text-left text-xs">Production Date</th>
+                            <th className="px-4 py-2 text-left text-xs">Expiry Date</th>
+                            <th className="px-4 py-2 text-left text-xs">Quantity</th>
+                            <th className="px-4 py-2 text-left text-xs">Order Status</th>
+                            <th className="px-4 py-2 text-left text-xs">Payment Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {order.medicines.map((medicine, index) => (
+                            <tr key={index}>
+                              <td className="px-4 py-2 text-sm">{medicine.name}</td>
+                              <td className="px-4 py-2 text-sm">{medicine.batchNo}</td>
+                              <td className="px-4 py-2 text-sm">{medicine.mrp}</td>
+                              <td className="px-4 py-2 text-sm">{medicine.productionDate}</td>
+                              <td className="px-4 py-2 text-sm">{medicine.expiryDate}</td>
+                              <td className="px-4 py-2 text-sm">{medicine.qty}</td>
+                              <td className="px-4 py-2 text-sm">{order.orderStatus}</td>
+                              <td className="px-4 py-2 text-sm">{order.paymentStatus}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      <div className="mt-4 flex">
+                        {order.orderStatus === 'Delivered' && (
+                          <>
+                            <button
+                              onClick={() => {
+                                setSelectedOrder(order);
+                                setShowFeedbackModal(true);
+                              }}
+                              className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
+                            >
+                              Provide Feedback
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedOrder(order);
+                                setShowReturnModal(true);
+                              }}
+                              className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+                            >
+                              Request Return
+                            </button>
+                          </>
+                        )}
+                        {order.orderStatus === 'Processing' && order.paymentStatus==='Pending'&& (
+                          <>
+                            <button
+                              onClick={() => {
+                                handlePay(order._id)
+                              }}
+                              className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
+                            >
+                              Payment
+                            </button>
+                            
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+
+
+            {/* SendFeedback */}
+      {showFeedbackModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center">
+          <div className="bg-white p-6 rounded shadow-lg w-1/3">
+            <h2 className="text-xl font-bold mb-4">Submit Feedback</h2>
+            <textarea
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              rows="4"
+              className="w-full border rounded p-2 mb-4"
+            />
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowFeedbackModal(false)}
+                className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleFeedbackSubmit}
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                disabled={loading} // Disable button while loading
+              >
+                {loading ? 'Submitting...' : 'Submit Feedback'}
+              </button>
             </div>
-            <div className="mb-4">
-              <label htmlFor="returnReason" className="block mb-2">Return Reason</label>
-              <textarea
-                id="returnReason"
-                value={returnReason}
-                onChange={handleReturnReasonChange}
-                className="border rounded p-2 w-full"
-                rows="4"
-              />
-            </div>
-            <button
-              onClick={handleReturnSubmit}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              Submit Return
-            </button>
-            <button
-              onClick={() => setReturnModalOpen(false)}
-              className="bg-gray-500 text-white px-4 py-2 rounded ml-2"
-            >
-              Cancel
-            </button>
           </div>
         </div>
+      )}
+
+
+      {/* Return Item */}
+      {showReturnModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center">
+          <div className="bg-white p-6 rounded shadow-lg w-1/3">
+            <h2 className="text-xl font-bold mb-4">Request Return</h2>
+            <label className="block mb-2">Quantity</label>
+            <input
+              type="number"
+              value={returnQuantity}
+              onChange={(e) => setReturnQuantity(e.target.value)}
+              className="w-full border rounded p-2 mb-4"
+            />
+            <label className="block mb-2">Reason</label>
+            <textarea
+              value={returnReason}
+              onChange={(e) => setReturnReason(e.target.value)}
+              rows="4"
+              className="w-full border rounded p-2 mb-4"
+            />
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowReturnModal(false)}
+                className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReturnSubmit}
+                className="bg-red-500 text-white px-4 py-2 rounded"
+              >
+                Submit Return
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
+
+      {/* ORDER NOW */}
+    {showOrderForm && (
+        <OrderForm closeForm={() => setShowOrderForm(false)} />
       )}
     </div>
   );
 };
 
-export default TrackOrder;
+export default ImprovedOrderTracking;

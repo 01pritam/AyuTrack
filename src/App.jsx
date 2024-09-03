@@ -12,6 +12,7 @@ import Billings from './pages/Billings/Billings';
 import { AuthContext } from './context/AuthContext';
 import MOrders from './pages/Manufacturers/MOrders';
 import DOrders from './pages/Distributors/DOrders';
+import DInventory from './pages/Distributors/DInventory'
 
 function App() {
   const { token, userRole } = useContext(AuthContext);
@@ -31,7 +32,7 @@ function App() {
           />
           <Route 
             path="/dashboard" 
-            element={token ? <Dashboard /> : <Navigate to="/signin" />} 
+            element={token ? <Dashboard  /> : <Navigate to="/signin" />} 
           />
           
           {/* Role-Based Routes */}
@@ -41,10 +42,12 @@ function App() {
               <Route path="/minventory" element={<MInventory />} />
               <Route path="/morders" element={<MOrders />} />
               <Route path="/billings" element={<Billings />} />
+              <Route path="/profile" element={<ProfilePage />} />
             </>
           )}
           {userRole === 'Distributor' && (
             <>
+              <Route path="/dinventory" element={<DInventory />} />
               <Route path="/track-orders" element={<TrackOrder />} />
               <Route path="/dorders" element={<DOrders />} />
             </>

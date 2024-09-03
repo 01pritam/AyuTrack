@@ -279,6 +279,7 @@ const Inventory = () => {
                   className="border p-2"
                 />
                 {formData.qualityImages.length > 0 && (
+                  
                   <button
                     type="button"
                     onClick={handleClearFiles}
@@ -308,6 +309,9 @@ const Inventory = () => {
           </div>
         </div>
       )}
+
+
+
     </div>
   );
 };
