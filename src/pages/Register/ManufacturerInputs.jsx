@@ -1,70 +1,93 @@
 import React from 'react';
 
-const DistributorInputs = ({ formData, onInputChange, onNestedInputChange, onArrayChange }) => {
+const ManufacturerInputs = ({ formData, onInputChange, onNestedInputChange, onArrayChange }) => {
   return (
     <>
       <label className="block text-base font-medium text-gray-700">
-        Distributor ID
+        Supplier ID
         <input
           type="text"
-          name="distributorId"
-          value={formData.distributorId}
+          name="supplierId"
+          value={formData.supplierId}
           onChange={onInputChange}
           className="mt-2 p-3 w-full border border-gray-300 rounded-lg shadow-sm"
         />
       </label>
-
       <label className="block text-base font-medium text-gray-700">
-        Warehouse Locations
+        Business Registration Number
         <input
           type="text"
-          name="warehouseLocations"
-          value={formData.warehouseLocations.join(', ')}
-          onChange={(e) => onArrayChange(e, 'warehouseLocations')}
+          name="businessRegistrationNumber"
+          value={formData.businessRegistrationNumber}
+          onChange={onInputChange}
+          className="mt-2 p-3 w-full border border-gray-300 rounded-lg shadow-sm"
+        />
+      </label>
+      <label className="block text-base font-medium text-gray-700">
+        Type of Products Supplied
+        <input
+          type="text"
+          name="typeOfProductsSupplied"
+          value={formData.typeOfProductsSupplied.join(', ')}
+          onChange={(e) => onArrayChange(e, 'typeOfProductsSupplied')}
           placeholder="Comma-separated"
           className="mt-2 p-3 w-full border border-gray-300 rounded-lg shadow-sm"
         />
       </label>
-
       <label className="block text-base font-medium text-gray-700">
-        Vehicle Fleet Details
+        License Number
         <input
           type="text"
-          name="vehicleType"
-          value={formData.vehicleFleetDetails.vehicleType}
-          onChange={(e) => onNestedInputChange(e, 'vehicleFleetDetails')}
-          placeholder="Vehicle Type"
+          name="licenseNumber"
+          value={formData.licenseNumber}
+          onChange={onInputChange}
           className="mt-2 p-3 w-full border border-gray-300 rounded-lg shadow-sm"
         />
+      </label>
+      <label className="block text-base font-medium text-gray-700">
+        Years in Operation
         <input
           type="number"
-          name="quantity"
-          value={formData.vehicleFleetDetails.quantity}
-          onChange={(e) => onNestedInputChange(e, 'vehicleFleetDetails')}
-          placeholder="Quantity"
-          className="mt-2 p-3 w-full border border-gray-300 rounded-lg shadow-sm"
-        />
-      </label>
-
-      <label className="block text-base font-medium text-gray-700">
-        Regions Covered
-        <input
-          type="text"
-          name="regionsCovered"
-          value={formData.regionsCovered.join(', ')}
-          onChange={(e) => onArrayChange(e, 'regionsCovered')}
-          placeholder="Comma-separated"
-          className="mt-2 p-3 w-full border border-gray-300 rounded-lg shadow-sm"
-        />
-      </label>
-
-      <label className="block text-base font-medium text-gray-700">
-        Preferred Shipping Method
-        <input
-          type="text"
-          name="preferredShippingMethod"
-          value={formData.preferredShippingMethod}
+          name="yearsInOperation"
+          value={formData.yearsInOperation}
           onChange={onInputChange}
+          className="mt-2 p-3 w-full border border-gray-300 rounded-lg shadow-sm"
+        />
+      </label>
+      <label className="block text-base font-medium text-gray-700">
+        Preferred Payment Method
+        <input
+          type="text"
+          name="preferredPaymentMethod"
+          value={formData.preferredPaymentMethod}
+          onChange={onInputChange}
+          className="mt-2 p-3 w-full border border-gray-300 rounded-lg shadow-sm"
+        />
+      </label>
+      <label className="block text-base font-medium text-gray-700">
+        Bank Account Details
+        <input
+          type="text"
+          name="accountNumber"
+          value={formData.bankAccountDetails.accountNumber}
+          onChange={(e) => onNestedInputChange(e, 'bankAccountDetails')}
+          placeholder="Account Number"
+          className="mt-2 p-3 w-full border border-gray-300 rounded-lg shadow-sm"
+        />
+        <input
+          type="text"
+          name="bankName"
+          value={formData.bankAccountDetails.bankName}
+          onChange={(e) => onNestedInputChange(e, 'bankAccountDetails')}
+          placeholder="Bank Name"
+          className="mt-2 p-3 w-full border border-gray-300 rounded-lg shadow-sm"
+        />
+        <input
+          type="text"
+          name="accountHolderName"
+          value={formData.bankAccountDetails.accountHolderName}
+          onChange={(e) => onNestedInputChange(e, 'bankAccountDetails')}
+          placeholder="Account Holder Name"
           className="mt-2 p-3 w-full border border-gray-300 rounded-lg shadow-sm"
         />
       </label>
@@ -101,4 +124,4 @@ const DistributorInputs = ({ formData, onInputChange, onNestedInputChange, onArr
   );
 };
 
-export default DistributorInputs;
+export default ManufacturerInputs;

@@ -15,7 +15,15 @@ const ImprovedOrderTracking = () => {
   const [loading, setLoading] = useState(false); // Add loading state
   const [showOrderForm, setShowOrderForm] = useState(false);
   const { token } = useContext(AuthContext);
+  const [returnStatus, setReturnStatus] = useState({});
+  const [returnError, setReturnError] = useState(null);
+  const [returnedItems, setReturnedItems] = useState([]);
+  const [showReturnedItems, setShowReturnedItems] = useState(false);
 
+
+
+
+  
   useEffect(() => {
     fetch('https://med-tech-server.onrender.com/api/manufacturers/orders/distributor/orderdetails', {
       method: 'GET',
@@ -150,20 +158,37 @@ const ImprovedOrderTracking = () => {
 
   const handleReturnSubmit = async () => {
     if (selectedOrder && returnQuantity && returnReason) {
+      setLoading(true);
+      setReturnError(null);
       try {
-        await fetch(`https://med-tech-server.onrender.com/api/manufacturers/orders/return`, {
-          method: 'PATCH',
+        const response = await fetch(`https://med-tech-server.onrender.com/api/manufacturers/orders/return`, {
+          method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ quantity: returnQuantity, reason: returnReason })
+          body: JSON.stringify({
+            orderId: selectedOrder._id,
+            quantity: returnQuantity,
+            reason: returnReason
+          })
         });
+
+        if (!response.ok) {
+          throw new Error('Failed to submit return request');
+        }
+
+        const result = await response.json();
+        setReturnStatus(prevStatus => ({
+          ...prevStatus,
+          [selectedOrder._id]: 'Pending'
+        }));
         alert('Return request submitted successfully');
       } catch (error) {
         console.error('Error submitting return:', error);
-        alert('Failed to submit return');
+        setReturnError('Failed to submit return request. Please try again.');
       } finally {
+        setLoading(false);
         setShowReturnModal(false);
         setReturnQuantity('');
         setReturnReason('');
@@ -204,14 +229,58 @@ const ImprovedOrderTracking = () => {
         >
         Order Now
     </button>
+
+    {/* Returned Items Table */}
+    <div className="mb-6">
+        <button
+          onClick={() => setShowReturnedItems(!showReturnedItems)}
+          className="bg-purple-500 text-white px-4 py-2 rounded mb-2"
+        >
+          {showReturnedItems ? 'Hide' : 'Show'} Returned Items
+        </button>
+        {showReturnedItems && (
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-4 py-2 text-left">Order ID</th>
+                  <th className="px-4 py-2 text-left">Medicine Name</th>
+                  <th className="px-4 py-2 text-left">Quantity</th>
+                  <th className="px-4 py-2 text-left">Reason</th>
+                  <th className="px-4 py-2 text-left">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {returnedItems.map((item, index) => (
+                  <tr key={index} className="border-b">
+                    <td className="px-4 py-2">{item.orderId}</td>
+                    <td className="px-4 py-2">{item.medicineName}</td>
+                    <td className="px-4 py-2">{item.quantity}</td>
+                    <td className="px-4 py-2">{item.reason}</td>
+                    <td className="px-4 py-2">
+                      <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(item.status)}`}>
+                        {item.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white">
           <thead className="bg-gray-100">
             <tr>
               <th className="px-4 py-2 text-left">Order ID</th>
+              <th className="px-4 py-2 text-left">Manufacturer Name</th>
               <th className="px-4 py-2 text-left">Order Status</th>
               <th className="px-4 py-2 text-left">Payment Status</th>
               <th className="px-4 py-2 text-left">Actions</th>
+              <th className="px-4 py-2 text-left">Confirm Date</th>
             </tr>
           </thead>
           <tbody>
@@ -219,6 +288,7 @@ const ImprovedOrderTracking = () => {
               <React.Fragment key={order._id}>
                 <tr className="border-b">
                   <td className="px-4 py-2">{order._id}</td>
+                  <td className="px-4 py-2">{order.manufacturer.name}</td>
                   <td className="px-4 py-2">
                     <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(order.orderStatus)}`}>
                       {order.orderStatus}
@@ -243,6 +313,8 @@ const ImprovedOrderTracking = () => {
                       Download Invoice
                     </button>
                   </td>
+                  <td className="px-4 py-2">{order.orderConfirmDate}</td>
+
                 </tr>
                 {expandedOrders[order._id] && (
                   <tr>
@@ -373,6 +445,9 @@ const ImprovedOrderTracking = () => {
               rows="4"
               className="w-full border rounded p-2 mb-4"
             />
+            {returnError && (
+              <p className="text-red-500 mb-4">{returnError}</p>
+            )}
             <div className="flex justify-end">
               <button
                 onClick={() => setShowReturnModal(false)}
@@ -383,13 +458,15 @@ const ImprovedOrderTracking = () => {
               <button
                 onClick={handleReturnSubmit}
                 className="bg-red-500 text-white px-4 py-2 rounded"
+                disabled={loading}
               >
-                Submit Return
+                {loading ? 'Submitting...' : 'Submit Return'}
               </button>
             </div>
           </div>
         </div>
       )}
+      
 
 
 

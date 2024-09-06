@@ -13,7 +13,9 @@ import { AuthContext } from './context/AuthContext';
 import MOrders from './pages/Manufacturers/MOrders';
 import DOrders from './pages/Distributors/DOrders';
 import DInventory from './pages/Distributors/DInventory'
-
+import Homepage from './pages/HomePage/Homepage';
+import { QrCode } from 'lucide-react';
+import QrCodePage from './pages/QrCodePage';
 function App() {
   const { token, userRole } = useContext(AuthContext);
   console.log("token:: ",token);
@@ -24,16 +26,24 @@ function App() {
         <Routes>
           <Route 
             path="/signin" 
-            element={token ? <Navigate to="/dashboard" /> : <Login />} 
+            element={token ? <Navigate to="/home" /> : <Login />} 
           />
           <Route 
             path="/signup" 
-            element={token ? <Navigate to="/dashboard" /> : <RegistrationForm />} 
+            element={token ? <Navigate to="/home" /> : <RegistrationForm />} 
+          />
+          <Route 
+            path="/home" 
+            element={token ? <Homepage  /> : <Navigate to="/signin" />} 
           />
           <Route 
             path="/dashboard" 
             element={token ? <Dashboard  /> : <Navigate to="/signin" />} 
           />
+         <Route 
+          path="/qrcodes/:id" 
+          element={token ? <QrCodePage /> : <Navigate to="/signin" />} 
+        />
           
           {/* Role-Based Routes */}
           
@@ -48,8 +58,11 @@ function App() {
           {userRole === 'Distributor' && (
             <>
               <Route path="/dinventory" element={<DInventory />} />
-              <Route path="/track-orders" element={<TrackOrder />} />
               <Route path="/dorders" element={<DOrders />} />
+              <Route path="/track-orders" element={<TrackOrder />} />
+              <Route path="/billings" element={<Billings />} />
+              <Route path="/profile" element={<ProfilePage />} />
+
             </>
           )}
           {userRole === 'Retailer' && (
@@ -60,7 +73,7 @@ function App() {
           )}
           
           {/* Default Fallback Route */}
-          <Route path="*" element={<Navigate to={token ? "/dashboard" : "/signin"} />} />
+          <Route path="*" element={<Navigate to={token ? "/home" : "/signin"} />} />
         </Routes>
       </div>
     </>

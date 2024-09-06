@@ -144,8 +144,8 @@ const Navbar = () => {
 
   const roleBasedNavItems = {
     Manufacturer: [
-      { label: "Orders", href: "/morders", icon: ShoppingBag },
       { label: "Inventory", href: "/minventory", icon: Layers },
+      { label: "Orders", href: "/morders", icon: ShoppingBag },
       { label: "Billings", href: "/billings", icon: CreditCard },
       { label: "Profile", href: "/profile", icon: User },
     ],
@@ -174,13 +174,15 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 py-4 bg-gradient-to-r from-blue-600 to-blue-800 shadow-lg">
+    <nav className="sticky top-0 z-50 py-4 bg-gradient-to-r from-teal-600 to-teal-800 shadow-lg">
       <div className="container px-4 mx-auto">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-white mr-10">
+          <div className="border-2 border-white rounded-lg px-2 py-1 inline-block mr-60">
+            <h1 className="text-2xl font-bold text-white">
               AyuTrack
             </h1>
+          </div>
             <ul className="hidden lg:flex  space-x-6">
               {navItems.map((item, index) => (
                 <li key={index}>

@@ -39,7 +39,6 @@ export const AuthProvider = ({ children }) => {
         return;
     }
 
-    console.log('Attempting login with URL:', loginUrl);
     try {
       const response = await axios.post(loginUrl, {
         emailAddress,
@@ -48,7 +47,6 @@ export const AuthProvider = ({ children }) => {
       console.log('Login Response:', response);
 
       if (response.data && response.data.token) {
-        console.log("Auth data.user: ", response.data.user);
         setUser(response.data.user);
         setToken(response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -62,10 +60,10 @@ export const AuthProvider = ({ children }) => {
     }
   }, [navigate]);
 
-  const registerUser = useCallback(async ({ emailAddress, password, role }) => {
+  const registerUser = useCallback(async (userData) => {
     let registerUrl = '';
 
-    switch (role) {
+    switch (userData.role) {
       case 'Manufacturer':
         registerUrl = 'https://med-tech-server.onrender.com/api/manufacturers/auth/register';
         break;
@@ -76,22 +74,72 @@ export const AuthProvider = ({ children }) => {
         registerUrl = 'https://med-tech-server.onrender.com/api/retailer/auth/register';
         break;
       default:
-        console.error('Invalid role:', role);
+        console.error('Invalid role:', userData.role);
         return;
     }
 
     try {
-      const response = await axios.post(registerUrl, {
-        emailAddress,
-        password
-      });
+      const payload = {
+        fullName: userData.fullName,
+        organizationName: userData.organizationName,
+        emailAddress: userData.emailAddress,
+        phoneNumber: userData.phoneNumber,
+        password: userData.password,
+        address: userData.address,
+        securityQuestion: userData.securityQuestion,
+        securityAnswer: userData.securityAnswer,
+        captchaVerification: userData.captchaVerification,
+        agreeToTermsAndConditions: userData.agreeToTermsAndConditions,
+      };
+
+      switch (userData.role) {
+        case 'Manufacturer':
+          Object.assign(payload, {
+            supplierId: userData.supplierId,
+            businessRegistrationNumber: userData.businessRegistrationNumber,
+            typeOfProductsSupplied: userData.typeOfProductsSupplied,
+            licenseNumber: userData.licenseNumber,
+            yearsInOperation: userData.yearsInOperation,
+            preferredPaymentMethod: userData.preferredPaymentMethod,
+            bankAccountDetails: userData.bankAccountDetails,
+            alternateContactInformation: userData.alternateContactInformation,
+          });
+          break;
+        case 'Distributor':
+          Object.assign(payload, {
+            distributorId: userData.distributorId,
+            licenseNumber: userData.licenseNumber,
+            warehouseLocations: userData.warehouseLocations,
+            vehicleFleetDetails: userData.vehicleFleetDetails,
+            regionsCovered: userData.regionsCovered,
+            preferredShippingMethod: userData.preferredShippingMethod,
+            alternateContactInformation: userData.alternateContactInformation,
+          });
+          break;
+        case 'Retailer':
+          Object.assign(payload, {
+            retailerId: userData.retailerId,
+            licenseNumber: userData.licenseNumber,
+            storeType: userData.storeType,
+            hoursOfOperation: userData.hoursOfOperation,
+            typesOfProductsSold: userData.typesOfProductsSold,
+            paymentMethodsAccepted: userData.paymentMethodsAccepted,
+            alternateContactInformation: userData.alternateContactInformation,
+          });
+          break;
+        default:
+          console.error('Invalid role:', userData.role);
+          return;
+      }
+
+      const response = await axios.post(registerUrl, payload);
       console.log('Registration Response:', response);
 
       if (response.data && response.data.token) {
         setUser(response.data.user);
         setToken(response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
-        localStorage.setItem('role', role); // Store role in localStorage
+        localStorage.setItem('role', userData.role); // Store role in localStorage
         navigate('/dashboard');
       } else {
         console.error('Access token not found in response data.');
@@ -104,10 +152,12 @@ export const AuthProvider = ({ children }) => {
   const logoutUser = useCallback(() => {
     setUser(null);
     setToken(null);
+    setUserRole(null);
     localStorage.removeItem('user');
-    localStorage.removeItem('token');
     localStorage.removeItem('role');
-    navigate('/signin');
+    localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
+    navigate('/signin'); // Redirect to the sign-in page after logout
   }, [navigate]);
 
   const value = {

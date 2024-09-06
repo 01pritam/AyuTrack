@@ -14,7 +14,13 @@ export default {
       'body': ['"Open Sans"'],
       'nerko-one': ['"Nerko One"', 'cursive'],
       'suse':["SUSE", 'serif'],
-    }
+    },
+    // colors: {
+    //   hoverColor: "#01594D",
+    //   brightColor: "#183187",
+    //   backgroundColor: "#1D8E63",
+    // }
+
   },
   plugins: [],
 }

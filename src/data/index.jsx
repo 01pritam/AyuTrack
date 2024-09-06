@@ -1,7 +1,8 @@
 // index.js in data folder
+import { Menu, X, User, ShoppingBag, Package, CreditCard,Layers,House,LayoutDashboard } from "lucide-react";
 export const navItems = [
-  { label: "Dashboard", href: "/dashboard" },
-  
+  { label: "Home", href: "/home" , icon: House  },
+  { label: "Dashboard", href: "/dashboard" ,icon:LayoutDashboard },
   { label: "Track Orders", href: "/track-orders" },
   { label: "Billings", href: "/billings" },
   { label: "Inventory", href: "/inventory" },
