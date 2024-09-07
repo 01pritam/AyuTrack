@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar/Navbar';
 import Inventory from './pages/Inventory/Inventory';
 import MInventory from './pages/Manufacturers/MInventory';
@@ -23,7 +23,6 @@ function App() {
     <>
       { <Navbar />}
       <div className="w-full min-h-screen overflow-auto bg-white">
-        <BrowserRouter>
         <Routes>
           <Route 
             path="/signin" 
@@ -75,8 +74,7 @@ function App() {
           
           {/* Default Fallback Route */}
           <Route path="*" element={<Navigate to={token ? "/home" : "/signin"} />} />
-          </Routes>
-        </BrowserRouter>
+        </Routes>
       </div>
     </>
   );

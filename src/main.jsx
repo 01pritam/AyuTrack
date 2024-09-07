@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter  } from 'react-router-dom';
 import App from './App.jsx';
 import './index.css';
 import { AuthProvider } from './context/AuthContext.jsx';
@@ -11,7 +11,7 @@ import { BillingProvider } from './context/BillingsContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <Router>
+    <BrowserRouter>
       <AuthProvider>
         <BillingProvider>
           <TrackOrderProvider>
@@ -23,6 +23,6 @@ createRoot(document.getElementById('root')).render(
           </TrackOrderProvider>
         </BillingProvider>
       </AuthProvider>
-    </Router>
+    </BrowserRouter>
   </StrictMode>
 );
