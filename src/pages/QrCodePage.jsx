@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, TextField, Button, Typography, Alert, Box, Card, CardContent, CircularProgress } from '@mui/material';
 import { PhotoCamera } from '@mui/icons-material';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 const QrCodeVerification = () => {
     const [distributorId, setDistributorId] = useState('');
     const [orderId, setOrderId] = useState('');
     const [location, setLocation] = useState('');
+    const [latitude, setLatitude] = useState(null);
+    const [longitude, setLongitude] = useState(null);
     const [image, setImage] = useState(null);
     const [error, setError] = useState('');
     const [qrCodeData, setQrCodeData] = useState(null);
@@ -17,6 +21,8 @@ const QrCodeVerification = () => {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
+                    setLatitude(latitude);
+                    setLongitude(longitude);
                     setLocation(`${latitude}, ${longitude}`);
                 },
                 (error) => {
@@ -140,6 +146,23 @@ const QrCodeVerification = () => {
                         </Box>
                     </Box>
 
+                    {latitude && longitude && (
+                        <Box sx={{ mt: 4 }}>
+                            <Typography variant="h6">Location Map:</Typography>
+                            <MapContainer center={[latitude, longitude]} zoom={13} style={{ height: '400px', width: '100%' }}>
+                                <TileLayer
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                />
+                                <Marker position={[latitude, longitude]}>
+                                    <Popup>
+                                        Your location: {latitude}, {longitude}
+                                    </Popup>
+                                </Marker>
+                            </MapContainer>
+                        </Box>
+                    )}
+
                     {qrCodeData && (
                         <Box sx={{ mt: 4 }}>
                             <Typography variant="h6">QR Code Data:</Typography>
@@ -153,3 +176,4 @@ const QrCodeVerification = () => {
 };
 
 export default QrCodeVerification;
+

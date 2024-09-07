@@ -9,6 +9,11 @@ export const InventoryProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { token, user } = useContext(AuthContext);
+  const [lowStock, setLowStock] = useState(0);
+  const [highStock, setHighStock] = useState(0);
+  const [outOfStock, setOutOfStock] = useState(0);
+  
+
 
   const updateInventoryData = (newData) => {
     setInventoryData(newData);
@@ -66,7 +71,7 @@ export const InventoryProvider = ({ children }) => {
   }, [token, user?.role]);
 
   return (
-    <InventoryContext.Provider value={{ InventoryData, setInventoryData, updateInventoryData, loading, error }}>
+    <InventoryContext.Provider value={{ InventoryData, lowStock,setLowStock,highStock,setHighStock,outOfStock,setOutOfStock, setInventoryData, updateInventoryData, loading, error }}>
       {children}
     </InventoryContext.Provider>
   );

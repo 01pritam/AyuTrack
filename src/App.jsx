@@ -21,12 +21,12 @@ function App() {
   console.log("token:: ",token);
   return (
     <>
-      {token && <Navbar />}
+      { <Navbar />}
       <div className="w-full min-h-screen overflow-auto bg-white">
         <Routes>
           <Route 
             path="/signin" 
-            element={token ? <Navigate to="/home" /> : <Login />} 
+            element={ <Login />} 
           />
           <Route 
             path="/signup" 
@@ -34,7 +34,7 @@ function App() {
           />
           <Route 
             path="/home" 
-            element={token ? <Homepage  /> : <Navigate to="/signin" />} 
+            element={<Homepage  /> } 
           />
           <Route 
             path="/dashboard" 

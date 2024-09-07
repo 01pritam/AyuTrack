@@ -48,7 +48,7 @@ const Login = () => {
 
   if (!userRole) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-teal-300">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Select Your User Type</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <Card
@@ -67,7 +67,6 @@ const Login = () => {
             onClick={() => handleUserTypeClick('Retailer')}
           />
         </div>
-        {/* Fancy Quote Section */}
         <blockquote className="mt-16 text-center p-6 bg-gray-100 rounded-lg shadow-lg">
           <p className="text-xl font-semibold text-gray-700">
             "Efficiency is doing things right; effectiveness is doing the right things."
@@ -79,7 +78,14 @@ const Login = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-white">
+    <div
+      className="flex justify-center items-center min-h-screen bg-teal-300" 
+      style={{
+        // backgroundImage: ,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
       <div className="w-full max-w-md p-8 bg-white shadow-md rounded-md">
         <h2 className="text-2xl font-semibold mb-6 text-gray-800">
           {role} Login
@@ -119,13 +125,12 @@ const Login = () => {
             Return to User Type Selection
           </button>
         </form>
-        <button 
+        <button
           onClick={handleNotRegisteredClick}
           className="mt-4 w-full py-2 px-4 bg-transparent text-teal-500 hover:underline focus:outline-none"
         >
           Not Registered Yet?
         </button>
-        
       </div>
     </div>
   );

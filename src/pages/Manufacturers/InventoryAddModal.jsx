@@ -1,6 +1,81 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+
+const gstCategories = [
+  {
+    rate: "2%",
+    categories: [
+      "Human Blood and Elements",
+      "Contraceptives",
+      "Human Vaccines",
+      "Animal Vaccines"
+    ]
+  },
+  {
+    rate: "5%",
+    categories: [
+      "Vaccines",
+      "Hepatitis",
+      "Desferriox",
+      "Cyclosporin",
+      "Biochemic",
+      "Rehydration",
+      "Test Kits",
+      "Bulk Drugs"
+    ]
+  },
+  {
+    rate: "12%",
+    categories: [
+      "Antibiotics",
+      "Antifungals",
+      "Analgesics",
+      "Antiseptics",
+      "Antivirals"
+    ]
+  },
+  {
+    rate: "18%",
+    categories: [
+      "Hormones",
+      "Diuretics",
+      "Antacids",
+      "Sedatives",
+      "Pain Relievers"
+    ]
+  },
+  {
+    rate: "28%",
+    categories: [
+      "Biologics",
+      "Specialty Drugs",
+      "Oncology",
+      "Neurology",
+      "Cardiovascular"
+    ]
+  }
+];
 
 const InventoryAddModal = ({ isOpen, onClose, formData, onInputChange, onFileChange, onCompositionChange, onAddComposition, onRemoveComposition, onSubmit }) => {
+  const [rate, setRate] = useState("");
+
+  useEffect(() => {
+    // Set initial rate when formData.category changes
+    handleCategoryChange({ target: { value: formData.category } });
+  }, [formData.category]);
+
+  const handleCategoryChange = (e) => {
+    const selectedCategory = e.target.value;
+    let selectedRate = "";
+    for (let group of gstCategories) {
+      if (group.categories.includes(selectedCategory)) {
+        selectedRate = group.rate;
+        break;
+      }
+    }
+    onInputChange(e);
+    setRate(selectedRate);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -9,85 +84,23 @@ const InventoryAddModal = ({ isOpen, onClose, formData, onInputChange, onFileCha
         <h2 className="text-2xl mb-6">Add Inventory Data</h2>
         <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }}>
           <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={onInputChange}
-                required
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
-              <input
-                type="text"
-                id="category"
-                name="category"
-                value={formData.category}
-                onChange={onInputChange}
-                required
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="batchNo" className="block text-sm font-medium text-gray-700">Batch No</label>
-              <input
-                type="text"
-                id="batchNo"
-                name="batchNo"
-                value={formData.batchNo}
-                onChange={onInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="expiryDate" className="block text-sm font-medium text-gray-700">Expiry Date</label>
-              <input
-                type="date"
-                id="expiryDate"
-                name="expiryDate"
-                value={formData.expiryDate}
-                onChange={onInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="mrp" className="block text-sm font-medium text-gray-700">MRP (₹)</label>
-              <input
-                type="number"
-                id="mrp"
-                name="mrp"
-                value={formData.mrp}
-                onChange={onInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="demand" className="block text-sm font-medium text-gray-700">Demand</label>
-              <input
-                type="number"
-                id="demand"
-                name="demand"
-                value={formData.demand}
-                onChange={onInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="productionDate" className="block text-sm font-medium text-gray-700">Production Date</label>
-              <input
-                type="date"
-                id="productionDate"
-                name="productionDate"
-                value={formData.productionDate}
-                onChange={onInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
+            {/* Input fields */}
+            <InputField id="name" label="Name" value={formData.name} onChange={onInputChange} required />
+            <SelectField id="category" label="Category" value={formData.category} onChange={handleCategoryChange} required>
+              <option value="">Select Category</option>
+              {gstCategories.map((gstGroup, groupIndex) => (
+                <optgroup key={groupIndex} label={`GST Rate: ${gstGroup.rate}`}>
+                  {gstGroup.categories.map((category, catIndex) => (
+                    <option key={catIndex} value={category}>{category}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </SelectField>
+            <InputField id="batchNo" label="Batch No" value={formData.batchNo} onChange={onInputChange} />
+            <InputField id="expiryDate" label="Expiry Date" type="date" value={formData.expiryDate} onChange={onInputChange} />
+            <InputField id="mrp" label="MRP (₹)" type="number" value={formData.mrp} onChange={onInputChange} />
+            <InputField id="demand" label="Demand" type="number" value={formData.demand} onChange={onInputChange} />
+            <InputField id="productionDate" label="Production Date" type="date" value={formData.productionDate} onChange={onInputChange} />
             <div>
               <label htmlFor="qualityCheck" className="block text-sm font-medium text-gray-700">Quality Check</label>
               <input
@@ -99,83 +112,14 @@ const InventoryAddModal = ({ isOpen, onClose, formData, onInputChange, onFileCha
                 className="mt-1 mr-2"
               />
             </div>
-            <div>
-              <label htmlFor="machineNo" className="block text-sm font-medium text-gray-700">Machine No</label>
-              <input
-                type="text"
-                id="machineNo"
-                name="machineNo"
-                value={formData.machineNo}
-                onChange={onInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="barcode" className="block text-sm font-medium text-gray-700">Barcode ID</label>
-              <input
-                type="text"
-                id="barcode"
-                name="barcode"
-                value={formData.barcode}
-                onChange={onInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="rack" className="block text-sm font-medium text-gray-700">Rack</label>
-              <input
-                type="text"
-                id="rack"
-                name="rack"
-                value={formData.rack}
-                onChange={onInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="temperature" className="block text-sm font-medium text-gray-700">Temperature</label>
-              <input
-                type="text"
-                id="temperature"
-                name="temperature"
-                value={formData.temperature}
-                onChange={onInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">Quantity</label>
-              <input
-                type="number"
-                id="quantity"
-                name="quantity"
-                value={formData.quantity}
-                onChange={onInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="cost" className="block text-sm font-medium text-gray-700">Cost (₹)</label>
-              <input
-                type="number"
-                id="cost"
-                name="cost"
-                value={formData.cost}
-                onChange={onInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="sellingPrice" className="block text-sm font-medium text-gray-700">Selling Price (₹)</label>
-              <input
-                type="number"
-                id="sellingPrice"
-                name="sellingPrice"
-                value={formData.sellingPrice}
-                onChange={onInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
+            <InputField id="machineNo" label="Machine No" value={formData.machineNo} onChange={onInputChange} />
+            <InputField id="barcode" label="Barcode ID" value={formData.barcode} onChange={onInputChange} />
+            <InputField id="rack" label="Rack" value={formData.rack} onChange={onInputChange} />
+            <InputField id="temperature" label="Temperature" value={formData.temperature} onChange={onInputChange} />
+            <InputField id="quantity" label="Quantity" type="number" value={formData.quantity} onChange={onInputChange} />
+            <InputField id="cost" label="Cost (₹)" type="number" value={formData.cost} onChange={onInputChange} />
+            <InputField id="sellingPrice" label="Selling Price (₹)" type="number" value={formData.sellingPrice} onChange={onInputChange} />
+            <InputField id="rate" label="GST Rate" value={rate} readOnly className="bg-gray-200" />
           </div>
 
           {/* Composition Fields */}
@@ -221,7 +165,7 @@ const InventoryAddModal = ({ isOpen, onClose, formData, onInputChange, onFileCha
             <input
               type="file"
               id="file"
-              name="file"
+              name="qualityImages"
               onChange={onFileChange}
               className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
@@ -247,5 +191,36 @@ const InventoryAddModal = ({ isOpen, onClose, formData, onInputChange, onFileCha
     </div>
   );
 };
+
+const InputField = ({ id, label, value, onChange, type = "text", required = false, className = "" }) => (
+  <div>
+    <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>
+    <input
+      type={type}
+      id={id}
+      name={id}
+      value={value}
+      onChange={onChange}
+      required={required}
+      className={`mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${className}`}
+    />
+  </div>
+);
+
+const SelectField = ({ id, label, value, onChange, required = false, children }) => (
+  <div>
+    <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>
+    <select
+      id={id}
+      name={id}
+      value={value}
+      onChange={onChange}
+      required={required}
+      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    >
+      {children}
+    </select>
+  </div>
+);
 
 export default InventoryAddModal;

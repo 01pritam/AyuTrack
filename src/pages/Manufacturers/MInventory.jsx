@@ -1,691 +1,11 @@
-// import React, { useState, useContext, useRef } from 'react';
-// import MInventoryRow from '../../components/Manufacturers/MInventoryRow';
-// import { InventoryContext } from '../../context/InventoryContext';
-// import { UserRoleContext } from '../../context/UserRoleContext';
-// import { AuthContext } from '../../context/AuthContext';
-
-// const Inventory = () => {
-//   const { InventoryData, loading, fetchInventoryData } = useContext(InventoryContext);
-//   const { role } = useContext(UserRoleContext);
-//   const [isModalOpen, setModalOpen] = useState(false);
-//   const { token } = useContext(AuthContext);
-  // const [formData, setFormData] = useState({
-  //   name: '',
-  //   category: '',
-  //   batchNo: '',
-  //   expiryDate: '',
-  //   mrp: '',
-  //   stockStatus: '',
-  //   demand: '',
-  //   productionDate: '',
-  //   qualityCheck: false, // Boolean for quality check
-  //   machineNo: '',
-  //   barcode: '',
-  //   rack: '',
-  //   temperature: '',
-  //   quantity: '', // Add quantity here
-  //   qualityImages: [], // Array to handle multiple files
-  // });
-  // const fileInputRef = useRef(null);
-
-//   if (loading) {
-//     return (
-//       <div className="flex justify-center items-center h-screen relative">
-//         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-//         <div className="absolute flex items-center justify-center h-full w-full">
-//           <p className="text-xl font-bold text-gray-600">Inventory Loading...</p>
-//         </div>
-//       </div>
-//     );
-//   }
-//   if (role !== 'Manufacturer') return <div>Access Denied...</div>;
-
-//   const handleInputChange = (e) => {
-//     const { name, value, type, checked } = e.target;
-//     if (type === 'checkbox') {
-//       setFormData({ ...formData, [name]: checked });
-//     } else {
-//       setFormData({ ...formData, [name]: value });
-//     }
-//   };
-
-//   const handleFileChange = (e) => {
-//     const files = Array.from(e.target.files);
-//     setFormData({ ...formData, qualityImages: files });
-//   };
-
-//   const handleClearFiles = () => {
-//     fileInputRef.current.value = ''; // Clear the file input
-//     setFormData({ ...formData, qualityImages: [] }); // Clear the state
-//   };
-
-//   const handleSubmit = async () => {
-//     const formDataToSend = new FormData();
-//     Object.keys(formData).forEach(key => {
-//       if (key === 'qualityCheck') {
-//         formDataToSend.append(key, formData[key] ? 'true' : 'false'); // Convert Boolean to string
-//       } else if (key === 'qualityImages') {
-//         formData[key].forEach((file, index) => {
-//           formDataToSend.append(`qualityImages[${index}]`, file);
-//         });
-//       } else if (key === 'quantity') {
-//         formDataToSend.append('qty', formData[key]); // Use 'qty' for quantity
-//       } else {
-//         formDataToSend.append(key, formData[key]);
-//       }
-//     });
-  
-//     try {
-//       const response = await fetch('https://med-tech-server.onrender.com/api/manufacturers/inv/add-inventory', {
-//         method: 'POST',
-//         headers: {
-//           'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
-//           // Do not set Content-Type for FormData
-//         },
-//         body: formDataToSend,
-//       });
-  
-//       if (!response.ok) {
-//         throw new Error(`HTTP error! Status: ${response.status}`);
-//       }
-  
-//       const data = await response.json(); // or response.text() if the response is not JSON
-//       console.log('Success:', data);
-  
-//       setModalOpen(false);
-//       fetchInventoryData(); // Refresh inventory data
-  
-//     } catch (error) {
-//       console.error('Error:', error);
-//     }
-//   };
-
-//   return (
-//     <div className="container mx-auto p-4">
-//       <div className="flex justify-end mb-4">
-//         <button
-//           className="bg-blue-500 text-white px-4 py-2 rounded"
-//           onClick={() => setModalOpen(true)}
-//         >
-//           Add Inventory Data
-//         </button>
-//       </div>
-
-//       <div className="overflow-x-auto">
-//         <table className="min-w-full bg-white border border-gray-300">
-//           <thead>
-//             <tr>
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">S.No</th>
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Batch No</th>
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expiry Date</th>
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">MRP (₹)</th>
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock Status</th>
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Demand</th>
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Production Date</th>
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quality Check</th>
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Machine No</th>
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Barcode ID</th>
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rack</th>
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Temperature</th>
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th> {/* New Column */}
-//               <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Upload Quality Images</th>
-//             </tr>
-//           </thead>
-          // <tbody>
-          //   {InventoryData.map((item, index) => (
-          //     <MInventoryRow
-          //       key={item.barcode} // Ensure this is unique
-          //       serialNumber={index + 1}
-          //       data={item}
-          //     />
-          //   ))}
-          // </tbody>
-//         </table>
-//       </div>
-
-//       {isModalOpen && (
-//         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-//           <div className="bg-white p-6 rounded-lg shadow-lg w-1/2">
-//             <h2 className="text-2xl mb-4">Add Inventory Data</h2>
-//             <form>
-//               <div className="grid grid-cols-2 gap-4">
-//                 <input
-//                   type="text"
-//                   name="name"
-//                   placeholder="Name"
-//                   value={formData.name}
-//                   onChange={handleInputChange}
-//                   className="border p-2"
-//                 />
-//                 <input
-//                   type="text"
-//                   name="category"
-//                   placeholder="Category"
-//                   value={formData.category}
-//                   onChange={handleInputChange}
-//                   className="border p-2"
-//                 />
-//                 <input
-//                   type="text"
-//                   name="batchNo"
-//                   placeholder="Batch No"
-//                   value={formData.batchNo}
-//                   onChange={handleInputChange}
-//                   className="border p-2"
-//                 />
-//                 <div className="border p-2">
-//                   <label htmlFor="expiryDate">Expiry Date:</label>
-//                   <input
-//                     id="expiryDate"
-//                     type="date"
-//                     name="expiryDate"
-//                     value={formData.expiryDate}
-//                     onChange={handleInputChange}
-//                     className="ml-2"
-//                   />
-//                   <div className="mt-1">
-//                     {formData.expiryDate ? new Date(formData.expiryDate).toLocaleDateString() : 'Select a date'}
-//                   </div>
-//                 </div>
-//                 <input
-//                   type="number"
-//                   name="mrp"
-//                   placeholder="MRP (₹)"
-//                   value={formData.mrp}
-//                   onChange={handleInputChange}
-//                   className="border p-2"
-//                 />
-//                 <input
-//                   type="text"
-//                   name="stockStatus"
-//                   placeholder="Stock Status"
-//                   value={formData.stockStatus}
-//                   onChange={handleInputChange}
-//                   className="border p-2"
-//                 />
-//                 <input
-//                   type="text"
-//                   name="demand"
-//                   placeholder="Demand"
-//                   value={formData.demand}
-//                   onChange={handleInputChange}
-//                   className="border p-2"
-//                 />
-//                 <input
-//                   type="date"
-//                   name="productionDate"
-//                   placeholder="Production Date"
-//                   value={formData.productionDate}
-//                   onChange={handleInputChange}
-//                   className="border p-2"
-//                 />
-//                 <div className="flex items-center">
-//                   <input
-//                     type="checkbox"
-//                     name="qualityCheck"
-//                     checked={formData.qualityCheck}
-//                     onChange={handleInputChange}
-//                     className="mr-2"
-//                   />
-//                   <label htmlFor="qualityCheck">Quality Check</label>
-//                 </div>
-//                 <input
-//                   type="text"
-//                   name="machineNo"
-//                   placeholder="Machine No"
-//                   value={formData.machineNo}
-//                   onChange={handleInputChange}
-//                   className="border p-2"
-//                 />
-//                 <input
-//                   type="text"
-//                   name="barcode"
-//                   placeholder="Barcode ID"
-//                   value={formData.barcode}
-//                   onChange={handleInputChange}
-//                   className="border p-2"
-//                 />
-//                 <input
-//                   type="text"
-//                   name="rack"
-//                   placeholder="Rack"
-//                   value={formData.rack}
-//                   onChange={handleInputChange}
-//                   className="border p-2"
-//                 />
-//                 <input
-//                   type="text"
-//                   name="temperature"
-//                   placeholder="Temperature"
-//                   value={formData.temperature}
-//                   onChange={handleInputChange}
-//                   className="border p-2"
-//                 />
-//                 <input
-//                   type="number"
-//                   name="quantity"
-//                   placeholder="Quantity"
-//                   value={formData.qty}
-//                   onChange={handleInputChange}
-//                   className="border p-2"
-//                 />
-//                 <input
-//                   type="file"
-//                   ref={fileInputRef}
-//                   multiple
-//                   onChange={handleFileChange}
-//                   className="border p-2"
-//                 />
-//                 {formData.qualityImages.length > 0 && (
-                  
-//                   <button
-//                     type="button"
-//                     onClick={handleClearFiles}
-//                     className="bg-red-500 text-white px-2 py-1 rounded"
-//                   >
-//                     Clear Files
-//                   </button>
-//                 )}
-//               </div>
-//               <div className="mt-4 flex justify-end">
-//                 <button
-//                   type="button"
-//                   onClick={handleSubmit}
-//                   className="bg-blue-500 text-white px-4 py-2 rounded"
-//                 >
-//                   Submit
-//                 </button>
-//                 <button
-//                   type="button"
-//                   onClick={() => setModalOpen(false)}
-//                   className="bg-gray-500 text-white px-4 py-2 rounded ml-2"
-//                 >
-//                   Close
-//                 </button>
-//               </div>
-//             </form>
-//           </div>
-//         </div>
-//       )}
-
-
-
-//     </div>
-//   );
-// };
-
-// export default Inventory;
-
-// import React, { useState, useContext, useRef } from 'react';
-// import MInventoryRow from '../../components/Manufacturers/MInventoryRow';
-// import { InventoryContext } from '../../context/InventoryContext';
-// import { UserRoleContext } from '../../context/UserRoleContext';
-// import { AuthContext } from '../../context/AuthContext';
-
-// const Inventory = () => {
-//   const { InventoryData, loading, fetchInventoryData } = useContext(InventoryContext);
-//   const { role } = useContext(UserRoleContext);
-//   const [isModalOpen, setModalOpen] = useState(false);
-//   const { token } = useContext(AuthContext);
-//   const [formData, setFormData] = useState({
-//     name: '',
-//     category: '',
-//     batchNo: '',
-//     expiryDate: '',
-//     mrp: '',
-//     demand: '',
-//     productionDate: '',
-//     qualityCheck: false,
-//     machineNo: '',
-//     barcode: '',
-//     rack: '',
-//     temperature: '',
-//     quantity: '',
-//     qualityImages: [],
-//     composition: [{ ingredient: '', quantity: '' }], // Initialize with one empty composition
-//   });
-//   const fileInputRef = useRef(null);
-
-//   if (loading) {
-//     return (
-//       <div className="flex justify-center items-center h-screen bg-gray-100">
-//         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
-//       </div>
-//     );
-//   }
-//   if (role !== 'Manufacturer') return <div>Access Denied...</div>;
-
-//   const handleInputChange = (e) => {
-//     const { name, value, type, checked } = e.target;
-//     if (type === 'checkbox') {
-//       setFormData({ ...formData, [name]: checked });
-//     } else {
-//       setFormData({ ...formData, [name]: value });
-//     }
-//   };
-
-//   const handleFileChange = (e) => {
-//     const files = Array.from(e.target.files);
-//     setFormData({ ...formData, qualityImages: files });
-//   };
-
-//   const handleClearFiles = () => {
-//     fileInputRef.current.value = '';
-//     setFormData({ ...formData, qualityImages: [] });
-//   };
-
-//   const handleCompositionChange = (index, e) => {
-//     const { name, value } = e.target;
-//     const newComposition = [...formData.composition];
-//     newComposition[index] = { ...newComposition[index], [name]: value };
-//     setFormData({ ...formData, composition: newComposition });
-//   };
-
-//   const handleAddComposition = () => {
-//     setFormData({ ...formData, composition: [...formData.composition, { ingredient: '', quantity: '' }] });
-//   };
-
-//   const handleRemoveComposition = (index) => {
-//     const newComposition = formData.composition.filter((_, i) => i !== index);
-//     setFormData({ ...formData, composition: newComposition });
-//   };
-
-//   const handleSubmit = async () => {
-//     const formDataToSend = new FormData();
-    
-//     // Append all fields except `composition` as usual
-//     Object.keys(formData).forEach(key => {
-//       if (key === 'qualityCheck') {
-//         formDataToSend.append(key, formData[key] ? 'true' : 'false');
-//       } else if (key === 'qualityImages') {
-//         formData[key].forEach((file, index) => {
-//           formDataToSend.append(`qualityImages[${index}]`, file);
-//         });
-//       } else if (key === 'quantity') {
-//         formDataToSend.append('qty', formData[key]);
-//       } else {
-//         formDataToSend.append(key, formData[key]);
-//       }
-//     });
-  
-//     // Manually handle `composition` field
-//     formData.composition.forEach((comp, index) => {
-//       formDataToSend.append(`composition[${index}][ingredient]`, comp.ingredient);
-//       formDataToSend.append(`composition[${index}][quantity]`, comp.quantity);
-//     });
-  
-//     try {
-//       const response = await fetch('https://med-tech-server.onrender.com/api/manufacturers/inv/add-inventory', {
-//         method: 'POST',
-//         headers: {
-//           'Authorization': `Bearer ${token}`,
-//         },
-//         body: formDataToSend,
-//       });
-  
-//       if (!response.ok) {
-//         throw new Error(`HTTP error! Status: ${response.status}`);
-//       }
-  
-//       const data = await response.json();
-//       console.log('Success:', data);
-  
-//       setModalOpen(false);
-//       fetchInventoryData();
-//     } catch (error) {
-//       console.error('Error:', error);
-//     }
-//   };
-
-//   return (
-//     <div className="container mx-auto p-4">
-//       <div className="flex justify-end mb-4">
-//         <button
-//           className="bg-blue-500 text-white px-4 py-2 rounded"
-//           onClick={() => setModalOpen(true)}
-//         >
-//           Add Inventory Data
-//         </button>
-//       </div>
-
-//       <div className="overflow-x-auto">
-//         <table className="min-w-full bg-white border border-gray-300">
-//           <thead>
-//             <tr>
-//               {/* Your table headers */}
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {InventoryData.map((item, index) => (
-//               <MInventoryRow
-//                 key={item.barcode}
-//                 serialNumber={index + 1}
-//                 data={item}
-//               />
-//             ))}
-//           </tbody>
-//         </table>
-//       </div>
-
-      // {isModalOpen && (
-      //   <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-      //     <div className="bg-white p-6 rounded-lg shadow-lg w-1/2">
-      //       <h2 className="text-2xl mb-4">Add Inventory Data</h2>
-      //       <form>
-      //         <div className="grid grid-cols-2 gap-4">
-      //           {/* Your other form fields */}
-      //           <input
-      //             type="text"
-      //             name="name"
-      //             placeholder="Name"
-      //             value={formData.name}
-      //             onChange={handleInputChange}
-      //             className="border p-2"
-      //           />
-      //           <input
-      //             type="text"
-      //             name="category"
-      //             placeholder="Category"
-      //             value={formData.category}
-      //             onChange={handleInputChange}
-      //             className="border p-2"
-      //           />
-      //           <input
-      //             type="text"
-      //             name="batchNo"
-      //             placeholder="Batch No"
-      //             value={formData.batchNo}
-      //             onChange={handleInputChange}
-      //             className="border p-2"
-      //           />
-      //           <input
-      //             type="date"
-      //             name="expiryDate"
-      //             placeholder="Expiry Date"
-      //             value={formData.expiryDate}
-      //             onChange={handleInputChange}
-      //             className="border p-2"
-      //           />
-      //           <input
-      //             type="text"
-      //             name="mrp"
-      //             placeholder="MRP (₹)"
-      //             value={formData.mrp}
-      //             onChange={handleInputChange}
-      //             className="border p-2"
-      //           />
-        
-      //           <input
-      //             type="text"
-      //             name="demand"
-      //             placeholder="Demand"
-      //             value={formData.demand}
-      //             onChange={handleInputChange}
-      //             className="border p-2"
-      //           />
-      //           <input
-      //             type="date"
-      //             name="productionDate"
-      //             placeholder="Production Date"
-      //             value={formData.productionDate}
-      //             onChange={handleInputChange}
-      //             className="border p-2"
-      //           />
-      //           <label className="flex items-center">
-      //             <input
-      //               type="checkbox"
-      //               name="qualityCheck"
-      //               checked={formData.qualityCheck}
-      //               onChange={handleInputChange}
-      //               className="mr-2"
-      //             />
-      //             Quality Check
-      //           </label>
-      //           <input
-      //             type="text"
-      //             name="machineNo"
-      //             placeholder="Machine No"
-      //             value={formData.machineNo}
-      //             onChange={handleInputChange}
-      //             className="border p-2"
-      //           />
-      //           <input
-      //             type="text"
-      //             name="barcode"
-      //             placeholder="Barcode ID"
-      //             value={formData.barcode}
-      //             onChange={handleInputChange}
-      //             className="border p-2"
-      //           />
-      //           <input
-      //             type="text"
-      //             name="rack"
-      //             placeholder="Rack"
-      //             value={formData.rack}
-      //             onChange={handleInputChange}
-      //             className="border p-2"
-      //           />
-      //           <input
-      //             type="text"
-      //             name="temperature"
-      //             placeholder="Temperature"
-      //             value={formData.temperature}
-      //             onChange={handleInputChange}
-      //             className="border p-2"
-      //           />
-      //           <input
-      //             type="number"
-      //             name="quantity"
-      //             placeholder="Quantity"
-      //             value={formData.quantity}
-      //             onChange={handleInputChange}
-      //             className="border p-2"
-      //           />
-      //           <input
-      //             type="number"
-      //             name="cost"
-      //             placeholder="Cost (₹)"
-      //             value={formData.cost}
-      //             onChange={handleInputChange}
-      //             className="border p-2"
-      //           />
-      //           <input
-      //             type="number"
-      //             name="sellingPrice"
-      //             placeholder="Selling Price (₹)"
-      //             value={formData.sellingPrice}
-      //             onChange={handleInputChange}
-      //             className="border p-2"
-      //           />
-      //           <div className="col-span-2">
-      //             <h3 className="text-xl mb-2">Composition</h3>
-      //             {formData.composition.map((comp, index) => (
-      //               <div key={index} className="flex items-center mb-2">
-      //                 <input
-      //                   type="text"
-      //                   name="ingredient"
-      //                   placeholder="Ingredient"
-      //                   value={comp.ingredient}
-      //                   onChange={(e) => handleCompositionChange(index, e)}
-      //                   className="border p-2 mr-2"
-      //                 />
-      //                 <input
-      //                   type="text"
-      //                   name="quantity"
-      //                   placeholder="Quantity"
-      //                   value={comp.quantity}
-      //                   onChange={(e) => handleCompositionChange(index, e)}
-      //                   className="border p-2 mr-2"
-      //                 />
-      //                 <button
-      //                   type="button"
-      //                   onClick={() => handleRemoveComposition(index)}
-      //                   className="bg-red-500 text-white px-2 py-1 rounded"
-      //                 >
-      //                   Remove
-      //                 </button>
-      //               </div>
-      //             ))}
-      //             <button
-      //               type="button"
-      //               onClick={handleAddComposition}
-      //               className="bg-green-500 text-white px-4 py-2 rounded"
-      //             >
-      //               Add Composition
-      //             </button>
-      //           </div>
-      //           <input
-      //             type="file"
-      //             multiple
-      //             ref={fileInputRef}
-      //             onChange={handleFileChange}
-      //             className="border p-2"
-      //           />
-      //           <button
-      //             type="button"
-      //             onClick={handleClearFiles}
-      //             className="text-blue-500"
-      //           >
-      //             Clear Files
-      //           </button>
-      //           {/* Your file input and other fields */}
-                
-      //         </div>
-      //         <div className="mt-4 flex justify-end">
-      //           <button
-      //             type="button"
-      //             onClick={handleSubmit}
-      //             className="bg-blue-500 text-white px-4 py-2 rounded"
-      //           >
-      //             Submit
-      //           </button>
-      //           <button
-      //             type="button"
-      //             onClick={() => setModalOpen(false)}
-      //             className="bg-gray-500 text-white px-4 py-2 rounded ml-2"
-      //           >
-      //             Close
-      //           </button>
-      //         </div>
-      //       </form>
-      //     </div>
-      //   </div>
-      // )}
-//     </div>
-//   );
-// };
-
-// export default Inventory;
-
-import React, { useState, useContext, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useContext, useRef, useCallback, useMemo,useEffect } from 'react';
 import { InventoryContext } from '../../context/InventoryContext';
 import { UserRoleContext } from '../../context/UserRoleContext';
 import { AuthContext } from '../../context/AuthContext';
 import InventoryAddModal from './InventoryAddModal'; 
+import QualityCheckImages from './QualityCheckImages';
 const Inventory = () => {
-  const { InventoryData, loading, fetchInventoryData } = useContext(InventoryContext);
+  const { InventoryData, lowStock,setLowStock,highStock,setHighStock,outOfStock,setOutOfStock, loading, fetchInventoryData } = useContext(InventoryContext);
   const { role } = useContext(UserRoleContext);
   const { token } = useContext(AuthContext);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -752,14 +72,84 @@ const removeCompositionField = (index) => {
   }));
 };
 
+  // const handleSubmit = useCallback(async () => {
+  //   const formDataToSend = new FormData();
+    
+  //   Object.entries(formData).forEach(([key, value]) => {
+  //     if (key === 'qualityCheck') {
+  //       formDataToSend.append(key, value ? 'true' : 'false');
+  //     } else if (key === 'quantity') {
+  //       formDataToSend.append('qty', value);
+  //     } else if (key !== 'composition' && key !== 'file') {
+  //       formDataToSend.append(key, value);
+  //     }
+  //   });
 
-  
+  //   formData.composition.forEach((comp, index) => {
+  //     formDataToSend.append(`composition[${index}][ingredient]`, comp.ingredient);
+  //     formDataToSend.append(`composition[${index}][quantity]`, comp.quantity);
+  //   });
 
+  //   if (formData.file) {
+  //     formDataToSend.append('qualityImages', formData.file);
+  //   }
 
+  //   https://med-gem.onrender.com/analyze-certificate
+  //   try {
+  //     const response = await fetch('https://med-tech-server.onrender.com/api/manufacturers/inv/add-inventory', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Authorization': `Bearer ${token}`,
+  //       },
+  //       body: formDataToSend,anal
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`);
+  //     }
+
+  //     const data = await response.json();
+  //     console.log('Success:', data);
+
+  //     setModalOpen(false);
+  //     fetchInventoryData();
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //   }
+  // }, [formData, token, fetchInventoryData]);
 
   const handleSubmit = useCallback(async () => {
     const formDataToSend = new FormData();
-    
+  
+    // Step 1: Send the quality image to the certificate analysis API
+    if (formData.file) {
+      const certificateFormData = new FormData();
+      certificateFormData.append('qualityImages', formData.file);
+      
+      try {
+        const certResponse = await fetch('https://med-gem.onrender.com/analyze-certificate', {
+          method: 'POST',
+          body: certificateFormData,
+        });
+  
+        if (!certResponse.ok) {
+          throw new Error(`HTTP error! Certificate analysis status: ${certResponse.status}`);
+        }
+  
+        const certData = await certResponse.json();
+        console.log('Certificate Analysis Result:', certData);
+  
+        // Step 2: Set qualityCheck based on certificate analysis result
+        formData.qualityCheck = certData.certificateDetected === 'Yes';
+  
+      } catch (certError) {
+        console.error('Certificate analysis error:', certError);
+        // Handle the error accordingly (you can set qualityCheck to false or alert the user)
+        formData.qualityCheck = false;
+      }
+    }
+  
+    // Step 3: Prepare the form data to send to the inventory API
     Object.entries(formData).forEach(([key, value]) => {
       if (key === 'qualityCheck') {
         formDataToSend.append(key, value ? 'true' : 'false');
@@ -769,16 +159,17 @@ const removeCompositionField = (index) => {
         formDataToSend.append(key, value);
       }
     });
-
+  
     formData.composition.forEach((comp, index) => {
       formDataToSend.append(`composition[${index}][ingredient]`, comp.ingredient);
       formDataToSend.append(`composition[${index}][quantity]`, comp.quantity);
     });
-
+  
     if (formData.file) {
-      formDataToSend.append('file', formData.file);
+      formDataToSend.append('qualityImages', formData.file);
     }
-
+  
+    // Step 4: Submit the inventory data to the inventory API
     try {
       const response = await fetch('https://med-tech-server.onrender.com/api/manufacturers/inv/add-inventory', {
         method: 'POST',
@@ -787,14 +178,14 @@ const removeCompositionField = (index) => {
         },
         body: formDataToSend,
       });
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
+  
       const data = await response.json();
       console.log('Success:', data);
-
+  
       setModalOpen(false);
       fetchInventoryData();
     } catch (error) {
@@ -831,8 +222,20 @@ const removeCompositionField = (index) => {
   const { inStockCount, lowStockCount, outOfStockCount } = useMemo(() => ({
     inStockCount: filteredData.filter(item => item.qty > 100).length,
     lowStockCount: filteredData.filter(item => item.qty > 0 && item.qty <= 100).length,
-    outOfStockCount: filteredData.filter(item => item.qty === 0 || !item.qty).length,
-  }), [filteredData]);
+    outOfStockCount: filteredData.filter(item => item.qty === 0 || !item.qty).length
+}), [filteredData]);
+
+// Use useEffect to update the states when counts change
+useEffect(() => {
+  console.log('Updating stock states:', {
+    lowStockCount,
+    inStockCount,
+    outOfStockCount
+  });
+  setLowStock(lowStockCount);
+  setHighStock(inStockCount);
+  setOutOfStock(outOfStockCount);
+}, [lowStockCount, inStockCount, outOfStockCount]); // Ensure this array is correctwStockCount, inStockCount,outOfStock]); // Dependencies: update when these counts change
 
   if (loading) {
     return (
@@ -898,10 +301,12 @@ const removeCompositionField = (index) => {
               <th className="py-2">Quantity</th>
               <th className="py-2">Rack</th>
               <th className="py-2">Selling Price</th>
+              <th className="py-2">Tax</th>
               <th className="py-2">Expiry Date</th>
               <th className="py-2">Production Date</th>
               <th className="py-2">Stock Status</th>
               <th className="py-2">Demand</th>
+              <th className="py-2">Quality</th>
             </tr>
           </thead>
           <tbody>
@@ -916,6 +321,8 @@ const removeCompositionField = (index) => {
                 <td className="py-2">{item.qty || '0'}</td>
                 <td className="py-2">{item.rack || 'N/A'}</td>
                 <td className="py-2">{item.sellingPrice || 'N/A'}</td>
+                <td className="py-2">{item.taxRate || 'N/A'}</td>
+
                 <td className="py-2">
                   {item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : 'N/A'}
                 </td>
@@ -928,6 +335,8 @@ const removeCompositionField = (index) => {
                   </span>
                 </td>
                 <td className="py-2">{item.demand || 'N/A'}</td>
+                <td className="py-2 flex items-center justify-center"></td>
+                <QualityCheckImages item={item} />
               </tr>
             ))}
           </tbody>

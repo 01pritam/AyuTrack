@@ -165,7 +165,7 @@ function Billings() {
           ) : (
             <>
               <div className="space-y-6">
-                <article className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <article className="grid grid-cols-4 gap-6 md:grid-cols-6">
                   <div className="flex flex-col space-y-2">
                     <label htmlFor="name" className="text-gray-800 font-medium">Your Full Name</label>
                     <input
@@ -194,7 +194,7 @@ function Billings() {
                   </div>
                 </article>
                 
-                <article className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <article className="grid grid-cols-3 gap-1 md:grid-cols-2">
                   <div className="flex flex-col space-y-2">
                     <label htmlFor="email" className="text-gray-800 font-medium">Your Email</label>
                     <input
