@@ -245,7 +245,7 @@ useEffect(() => {
     );
   }
 
-  // if (role !== 'Manufacturer') return <div>Access Denied...</div>;
+  if (role !== 'Manufacturer') return <div>Access Denied...</div>;
 
   return (
     <div className="mt-5 mx-auto p-4 bg-gray-50">
