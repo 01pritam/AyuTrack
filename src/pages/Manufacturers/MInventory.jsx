@@ -4,6 +4,8 @@ import { UserRoleContext } from '../../context/UserRoleContext';
 import { AuthContext } from '../../context/AuthContext';
 import InventoryAddModal from './InventoryAddModal'; 
 import QualityCheckImages from './QualityCheckImages';
+import ConfirmModal from '../../components/confirmModal'; // Import the ConfirmModal component
+
 const Inventory = () => {
   const { InventoryData, lowStock,setLowStock,highStock,setHighStock,outOfStock,setOutOfStock, loading, fetchInventoryData } = useContext(InventoryContext);
   const { role } = useContext(UserRoleContext);
@@ -12,6 +14,9 @@ const Inventory = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('All');
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [isConfirmModalOpen, setConfirmModalOpen] = useState(false); // Updated state variable
+  const [modalMessage, setModalMessage] = useState(''); // Message for the modal
+
   const fileInputRef = useRef(null);
 
 
@@ -187,9 +192,14 @@ const removeCompositionField = (index) => {
       console.log('Success:', data);
   
       setModalOpen(false);
-      fetchInventoryData();
+
+      setModalMessage('Inventory successfully added!'); // Set modal message
+      setConfirmModalOpen(true); // Open the confirmation modal
+      // fetchInventoryData();
     } catch (error) {
       console.error('Error:', error);
+      setModalMessage('Error submitting inventory. Please try again.');
+      setConfirmModalOpen(true); // Open the modal in case of error
     }
   }, [formData, token, fetchInventoryData]);
 
@@ -354,7 +364,13 @@ useEffect(() => {
             onRemoveComposition={removeCompositionField}
             onSubmit={handleSubmit}
         />
-
+ {isConfirmModalOpen && (
+        <ConfirmModal
+          isOpen={isConfirmModalOpen}
+          onClose={() => setConfirmModalOpen(false)}
+          message={modalMessage}
+        />
+      )}
       {filterDialogOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg w-1/3 relative">
@@ -393,6 +409,7 @@ useEffect(() => {
           </div>
         </div>
       )}
+    
     </div>
   );
 };
