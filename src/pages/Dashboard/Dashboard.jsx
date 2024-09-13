@@ -28,6 +28,65 @@ const deliveryPerformance = [
   { name: 'Sat', onTime: 80, delayed: 20 },
   { name: 'Sun', onTime: 95, delayed: 5 },
 ];
+const medicineData = {
+  Paracetamol: [
+    { name: 'Jan', demand: 1200 },
+    { name: 'Feb', demand: 1100 },
+    { name: 'Mar', demand: 1300 },
+    { name: 'Apr', demand: 1400 },
+    { name: 'May', demand: 1250 },
+    { name: 'Jun', demand: 1350 },
+    { name: 'Jul', demand: 1500 },
+    { name: 'Aug', demand: 1450 },
+    { name: 'Sep', demand: 1600 },
+    { name: 'Oct', demand: 1550 },
+    { name: 'Nov', demand: 1650 },
+    { name: 'Dec', demand: 1700 },
+  ],
+  Ibuprofen: [
+    { name: 'Jan', demand: 800 },
+    { name: 'Feb', demand: 750 },
+    { name: 'Mar', demand: 850 },
+    { name: 'Apr', demand: 900 },
+    { name: 'May', demand: 850 },
+    { name: 'Jun', demand: 920 },
+    { name: 'Jul', demand: 950 },
+    { name: 'Aug', demand: 900 },
+    { name: 'Sep', demand: 980 },
+    { name: 'Oct', demand: 970 },
+    { name: 'Nov', demand: 1000 },
+    { name: 'Dec', demand: 1050 },
+  ],
+  Amoxicillin: [
+    { name: 'Jan', demand: 600 },
+    { name: 'Feb', demand: 620 },
+    { name: 'Mar', demand: 640 },
+    { name: 'Apr', demand: 660 },
+    { name: 'May', demand: 680 },
+    { name: 'Jun', demand: 700 },
+    { name: 'Jul', demand: 720 },
+    { name: 'Aug', demand: 740 },
+    { name: 'Sep', demand: 760 },
+    { name: 'Oct', demand: 780 },
+    { name: 'Nov', demand: 800 },
+    { name: 'Dec', demand: 820 },
+  ],
+  Lisinopril: [
+    { name: 'Jan', demand: 400 },
+    { name: 'Feb', demand: 420 },
+    { name: 'Mar', demand: 440 },
+    { name: 'Apr', demand: 460 },
+    { name: 'May', demand: 480 },
+    { name: 'Jun', demand: 500 },
+    { name: 'Jul', demand: 520 },
+    { name: 'Aug', demand: 540 },
+    { name: 'Sep', demand: 560 },
+    { name: 'Oct', demand: 580 },
+    { name: 'Nov', demand: 600 },
+    { name: 'Dec', demand: 620 },
+  ],
+};
+
 function Dashboard() {
   const [orderData, setOrderData] = useState([]);
   // const [inventoryData, setInventoryData] = useState([]);
@@ -36,6 +95,11 @@ function Dashboard() {
   const [recentOrders, setRecentOrders] = useState([]);
   const { token } = useContext(AuthContext);
   const {lowStock,highStock,OutOfStock}=useContext(InventoryContext);
+  const [selectedMedicine, setSelectedMedicine] = useState('Paracetamol');
+
+  const handleMedicineChange = (event) => {
+    setSelectedMedicine(event.target.value);
+  };
   console.log('OutOfStock:', OutOfStock);
   useEffect(() => {
     // Fetch KPI data from API when component mounts
@@ -91,7 +155,7 @@ function Dashboard() {
           </BarChart>
         </ChartCard>
 
-        <ChartCard title="Delivery Performance">
+        {/* <ChartCard title="Delivery Performance">
           <LineChart data={deliveryPerformance}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
@@ -101,7 +165,31 @@ function Dashboard() {
             <Line type="monotone" dataKey="onTime" stroke="#10B981" name="On Time" />
             <Line type="monotone" dataKey="delayed" stroke="#F59E0B" name="Delayed" />
           </LineChart>
-        </ChartCard>
+        </ChartCard> */}
+         <ChartCard title="Delivery Performance">
+      <div style={{ marginBottom: '20px' }}>
+        <label htmlFor="medicineSelect">Select Medicine: </label>
+        <select
+          id="medicineSelect"
+          value={selectedMedicine}
+          onChange={handleMedicineChange}
+        >
+          {Object.keys(medicineData).map((medicine) => (
+            <option key={medicine} value={medicine}>
+              {medicine}
+            </option>
+          ))}
+        </select>
+      </div>
+      <LineChart data={medicineData[selectedMedicine]}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        <Line type="monotone" dataKey="demand" stroke="#10B981" name="Demand" />
+      </LineChart>
+    </ChartCard>
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
