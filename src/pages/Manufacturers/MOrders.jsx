@@ -254,22 +254,22 @@ function MOrders() {
         </div>
       )}
 
-      <TableContainer component={Paper} elevation={3}>
+<TableContainer component={Paper} elevation={3} style={{ maxHeight: '400px', overflowY: 'auto' }}>
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Order Details</TableCell>
-              <TableCell>Distributor</TableCell>
-              <TableCell>Medicine</TableCell>
-              
-              <TableCell>Delivery Status</TableCell>
-              <TableCell>Payment Status</TableCell>
-              <TableCell>Actions</TableCell>
-              <TableCell>Rating</TableCell>
-              <TableCell>QR Code</TableCell>
-              <TableCell>BOX No.</TableCell>
-            </TableRow>
-          </TableHead>
+        <TableHead>
+      <TableRow>
+        <TableCell style={{ position: 'sticky', top: 0, backgroundColor: '#f5f5f5', zIndex: 1 }}>Order Details</TableCell>
+        <TableCell style={{ position: 'sticky', top: 0, backgroundColor: '#f5f5f5', zIndex: 1 }}>Distributor</TableCell>
+        <TableCell style={{ position: 'sticky', top: 0, backgroundColor: '#f5f5f5', zIndex: 1 }}>Medicine</TableCell>
+        <TableCell style={{ position: 'sticky', top: 0, backgroundColor: '#f5f5f5', zIndex: 1 }}>Delivery Status</TableCell>
+        <TableCell style={{ position: 'sticky', top: 0, backgroundColor: '#f5f5f5', zIndex: 1 }}>Payment Status</TableCell>
+        <TableCell style={{ position: 'sticky', top: 0, backgroundColor: '#f5f5f5', zIndex: 1 }}>Actions</TableCell>
+        <TableCell style={{ position: 'sticky', top: 0, backgroundColor: '#f5f5f5', zIndex: 1 }}>Rating</TableCell>
+        <TableCell style={{ position: 'sticky', top: 0, backgroundColor: '#f5f5f5', zIndex: 1 }}>QR Code</TableCell>
+        <TableCell style={{ position: 'sticky', top: 0, backgroundColor: '#f5f5f5', zIndex: 1 }}>BOX No.</TableCell>
+      </TableRow>
+    </TableHead>
+
           <TableBody>
             {orders.length > 0 ? (
               orders.map((order) => (
