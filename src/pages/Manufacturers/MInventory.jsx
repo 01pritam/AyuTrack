@@ -298,27 +298,27 @@ useEffect(() => {
           </div>
           <button onClick={() => setFilterDialogOpen(true)} className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Filters</button>
         </div>
-
+        <div className="table-container" style={{ maxHeight: '400px', overflowY: 'auto' }}>
         <table className="min-w-full">
-          <thead>
-            <tr className="text-left text-gray-500">
-              <th className="py-2">S.No</th>
-              <th className="py-2">Name</th>
-              <th className="py-2">Category</th>
-              <th className="py-2">Batch No</th>
-              <th className="py-2">Machine No</th>
-              <th className="py-2">MRP (₹)</th>
-              <th className="py-2">Quantity</th>
-              <th className="py-2">Rack</th>
-              <th className="py-2">Selling Price</th>
-              <th className="py-2">Tax</th>
-              <th className="py-2">Expiry Date</th>
-              <th className="py-2">Production Date</th>
-              <th className="py-2">Stock Status</th>
-              <th className="py-2">Demand</th>
-              <th className="py-2">Quality</th>
-            </tr>
-          </thead>
+        <thead className="bg-gray-100 sticky top-0">
+      <tr className="text-left text-gray-500">
+        <th className="py-2 px-4 sticky top-0 bg-gray-100">S.No</th>
+        <th className="py-2 px-4 sticky top-0 bg-gray-100">Name</th>
+        <th className="py-2 px-4 sticky top-0 bg-gray-100">Category</th>
+        <th className="py-2 px-4 sticky top-0 bg-gray-100">Batch No</th>
+        <th className="py-2 px-4 sticky top-0 bg-gray-100">Machine No</th>
+        <th className="py-2 px-4 sticky top-0 bg-gray-100">MRP (₹)</th>
+        <th className="py-2 px-4 sticky top-0 bg-gray-100">Quantity</th>
+        <th className="py-2 px-4 sticky top-0 bg-gray-100">Rack</th>
+        <th className="py-2 px-4 sticky top-0 bg-gray-100">Selling Price</th>
+        <th className="py-2 px-4 sticky top-0 bg-gray-100">Tax</th>
+        <th className="py-2 px-4 sticky top-0 bg-gray-100">Expiry Date</th>
+        <th className="py-2 px-4 sticky top-0 bg-gray-100">Production Date</th>
+        <th className="py-2 px-4 sticky top-0 bg-gray-100">Stock Status</th>
+        <th className="py-2 px-4 sticky top-0 bg-gray-100">Demand</th>
+        <th className="py-2 px-4 sticky top-0 bg-gray-100">Quality</th>
+      </tr>
+    </thead>
           <tbody>
             {filteredData.map((item, index) => (
               <tr key={item.sku || index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
@@ -351,6 +351,7 @@ useEffect(() => {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <InventoryAddModal 
